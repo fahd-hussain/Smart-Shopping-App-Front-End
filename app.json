@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Front-End",
-    "slug": "Front-End",
+    "name": "Smart-Shopping-App",
+    "slug": "Smart-Shopping-App",
     "platforms": [
       "ios",
       "android",
@@ -22,7 +22,13 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.FYP.SmartShoppingApp",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "com.FYP.SmartShoppingApp",
+      "versionCode": 1
     }
   }
 }

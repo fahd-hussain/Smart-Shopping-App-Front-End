@@ -1,19 +1,23 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { StatusBar } from "react-native";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/es/integration/react";
+// Local Imports
+import AppContainer from "./src/navigation";
+import ConfigureStore from "./src/redux/configureStore";
+import LoadingScreen from "./src/components/Loading";
+const { persistor, store } = ConfigureStore();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
+    <Provider store={store}>
+      <PersistGate
+        loading={<LoadingScreen />}
+        persistor={persistor}
+      >
+        <StatusBar hidden={true} />
+        <AppContainer />
+      </PersistGate>
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
