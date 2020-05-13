@@ -3,16 +3,17 @@ import { Text, View, AsyncStorage } from 'react-native'
 import { connect } from 'react-redux'
 
 // Local Imports
-import { getUser } from '../../../redux'
+import styles from './styles'
+import { getAllList } from '../../../redux'
 
 export class HomeScreen extends Component {
     componentDidMount = () => {
-        // this.props.getUser(this.props.token.token)
+        this.props.getAllList(this.props.token.token)
     }
 
     render() {
         return (
-            <View>
+            <View style={styles.container}>
                 <Text> Home </Text>
             </View>
         )
@@ -27,7 +28,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        // getUser: ( token ) => dispatch(getUser(token))
+        getAllList: ( token ) => dispatch(getAllList(token))
     }
 }
 

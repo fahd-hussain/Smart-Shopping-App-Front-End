@@ -31,14 +31,15 @@ export class LoginScreen extends Component {
     }
   }
   sendCred = async () =>{
-    const username = "fadi@gmail.com"
+    // const username = "fadi@gmail.com"
+    const username = "ghazi@gmail.com"
     const password = "123456"
     this.setState({ modalVisible: true })
     await this.props.getToken(username, password);
     
   }
 
-  navigte = () => {
+  navigate = () => {
     this.props.navigation.navigate("Application")
   }
   render() {

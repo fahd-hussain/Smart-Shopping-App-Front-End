@@ -1,6 +1,7 @@
 import axios from "axios";
 import baseUrl from "../../constants/baseUrl";
 import { getUserSuccess, getUser } from '../user/userActions'
+import { all_list_success } from '../allList/allListActions'
 
 const tokenRequest = () => {
   return {
@@ -79,6 +80,7 @@ export const removeToken = () => (dispatch) => {
       console.log(token)
       dispatch(tokenSuccess(token));
       dispatch(getUserSuccess(null));
+      dispatch(all_list_success(null))
     })
     .catch((error) => {
       dispatch(tokenFailure(error));

@@ -4,7 +4,7 @@ const initState = {
   error: "",
 };
 
-export default userReducer = (state = initState, action) => {
+export const userReducer = (state = initState, action) => {
   switch (action.type) {
     case "GET_USER_REQUEST":
       return {

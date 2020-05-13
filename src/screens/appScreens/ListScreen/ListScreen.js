@@ -1,163 +1,70 @@
 import React, { Component } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  AsyncStorage,
-  Button,
-  Platform,
-} from "react-native";
+import { Text, Button, View, FlatList, TouchableOpacity } from "react-native";
+import { connect } from "react-redux";
+import { Card } from "native-base";
 
-import CustomHeader from "../../components/CustomHeader";
-import CreateListBtn from "../../components/CreateListBtn";
+// Local Imports
+import styles from "./styles";
+import { getAllList } from "../../../redux";
 
-const isAndroid = Platform.OS == "android";
-const viewPadding = 10;
-
-export default class ListScreen extends Component {
-  state = {
-    tasks: [],
-    text: "",
-  };
-
-  addTask = () => {
-    let notEmpty = this.state.text.trim().length > 0;
-
-    if (notEmpty) {
-      this.setState(
-        prevState => {
-          let { tasks, text } = prevState;
-          return {
-            tasks: tasks.concat({ key: tasks.length, text: text }),
-            text: "",
-          };
-        },
-        () => Tasks.save(this.state.tasks)
-      );
+class ListScreen extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            allList: this.props.allList.allList,
+        };
     }
-  };
+    UNSAFE_componentWillMount = () => {
+        this.props.getAllList(this.props.token.token);
+    };
 
-  deleteTask = (i) => {
-    this.setState(
-      (prevState) => {
-        let tasks = prevState.tasks.slice();
+    navigateToShowList = (item) => {
+        this.props.navigation.navigate("ListShow", item)
+    }
 
-        tasks.splice(i, 1);
-
-        return { tasks: tasks };
-      },
-      () => Tasks.save(this.state.tasks)
-    );
-  };
-
-  // getData = async () => {
-  //   console.log("get");
-  //   const userToken = await AsyncStorage.getItem("userToken");
-  //   fetch("https://smartshoppingapp.herokuapp.com/readList", {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: userToken,
-  //     },
-  //   })
-  //     .then((response) => response.json())
-  //     .then((tasks) => Tasks.save(tasks));
-  // };
-
-  componentDidMount = async () => {
-    // this.getData();
-    Tasks.all((tasks) => this.setState({ tasks: tasks || [] }));
-  };
-
-  render() {
-    console.log(this.state.tasks);
-    return (
-      <>
-        <View
-          style={[styles.container, { paddingBottom: this.state.viewPadding }]}
-        >
-          <FlatList
-            style={styles.list}
-            data={this.state.tasks}
-            renderItem={({ item, index }) => (
-              <View>
-                <View style={styles.listItemCont}>
-                  <Text style={styles.listItem}>{item.text}</Text>
-                  <Button title="Drop" onPress={() => this.deleteTask(index)} />
+    render() {
+        // console.log(this.state.allList);
+        const list = this.props.allList.allList;
+        return (
+            <View style={[styles.container, { paddingBottom: this.state.viewPadding }]}>
+                <FlatList
+                    style={styles.list}
+                    data={list}
+                    keyExtractor={(item) => item._id}
+                    renderItem={({ item, index }) => (
+                        <TouchableOpacity onPress={() => this.navigateToShowList(item)}>
+                            <Card style={{ paddingHorizontal: 10 }}>
+                                <View style={styles.listItemCont}>
+                                    <Text style={styles.listItem}>{item.name}</Text>
+                                </View>
+                                <View style={styles.hr} />
+                            </Card>
+                        </TouchableOpacity>
+                    )}
+                    ListEmptyComponent={
+                        <View style={styles.emptyScreen}>
+                            <Text>Oops! You don't have any list to show</Text>
+                        </View>
+                    }
+                />
+                <View style={styles.createListBtn}>
+                    <Button title="+" onPress={() => this.props.navigation.navigate("CreateList")} />
                 </View>
-                <View style={styles.hr} />
-              </View>
-            )}
-            ListEmptyComponent={
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flex: 1,
-                }}
-              >
-                <Text>Oops! You don't have any Tasks</Text>
-              </View>
-            }
-          />
-        </View>
-      </>
-    );
-  }
+            </View>
+        );
+    }
 }
 
-let Tasks = {
-  convertToArrayOfObject(tasks, callback) {
-    return callback(
-      tasks ? tasks.split("||").map((task, i) => ({ key: i, text: task })) : []
-    );
-  },
-  convertToStringWithSeparators(tasks) {
-    return tasks.map((task) => task.text).join("||");
-  },
-  all(callback) {
-    return AsyncStorage.getItem("LISTS", (err, tasks) =>
-      this.convertToArrayOfObject(tasks, callback)
-    );
-  },
-  save(tasks) {
-    AsyncStorage.setItem("LISTS", this.convertToStringWithSeparators(tasks));
-  },
+const mapStateToProps = (state) => {
+    return {
+        token: state.token,
+        allList: state.allList,
+    };
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5FCFF",
-    padding: viewPadding,
-    paddingTop: 20,
-  },
-  list: {
-    width: "100%",
-  },
-  listItem: {
-    paddingTop: 2,
-    paddingBottom: 2,
-    fontSize: 18,
-  },
-  hr: {
-    height: 1,
-    backgroundColor: "#fff000",
-  },
-  listItemCont: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  textInput: {
-    height: 40,
-    paddingRight: 10,
-    paddingLeft: 10,
-    borderColor: "gray",
-    borderWidth: isAndroid ? 0 : 1,
-    width: "100%",
-  },
-});
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getAllList: (token) => dispatch(getAllList(token)),
+    };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(ListScreen);

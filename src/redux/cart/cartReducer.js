@@ -1,32 +1,32 @@
 const initState = {
   loading: false,
-  allList: [],
+  cart: "",
   error: "",
 };
 
-export const allListReducer = (state = initState, action) => {
+export const cartReducer = (state = initState, action) => {
   switch (action.type) {
-    case "ALL_LIST_REQUEST":
+    case "CART_REQUEST":
       return {
+        ...state,
         loading: true,
       };
-    case "ALL_LIST_SUCCESS":
+
+    case "CART_SUCCESS":
       return {
         ...state,
+        cart: action.payload,
         loading: false,
-        allList: action.payload,
         error: "",
       };
-    case "ALL_LIST_FAILURE":
+
+    case "CART_FAILURE":
       return {
         ...state,
-        loading: false,
-        allList: [],
         error: action.payload,
+        cart: "",
       };
     default:
-      return {
-        ...state,
-      };
+      return state;
   }
 };

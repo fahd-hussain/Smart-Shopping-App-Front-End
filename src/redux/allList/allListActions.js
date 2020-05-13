@@ -1,21 +1,41 @@
 import axios from "axios";
+import baseUrl from "../../constants/baseUrl";
 
 const all_list_request = () => {
     return {
-        type: "ALL_LIST_REQUEST"
-    }
-}
+        type: "ALL_LIST_REQUEST",
+    };
+};
 
-const all_list_success = (payload) => {
+export const all_list_success = (payload) => {
     return {
         type: "ALL_LIST_SUCCESS",
-        payload
-    }
-}
+        payload,
+    };
+};
 
 const all_list_failure = (payload) => {
     return {
         type: "ALL_LIST_FAILURE",
-        payload
-    }
-}
+        payload,
+    };
+};
+
+export const getAllList = (token) => (dispatch) => {
+    dispatch(all_list_request);
+    return axios(baseUrl + "lists", {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": token,
+        }
+    })
+    .then(res => {
+        const allList = res.data
+        console.log(res.data)
+        dispatch(all_list_success(allList))
+    })
+    .catch(error => {
+        dispatch(all_list_failure(error))
+    })
+};
