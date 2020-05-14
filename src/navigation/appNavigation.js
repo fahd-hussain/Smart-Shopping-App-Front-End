@@ -2,7 +2,7 @@ import React from "react";
 import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import { createDrawerNavigator } from "react-navigation-drawer";
-import { Dimensions } from "react-native";
+import { Dimensions, TouchableOpacity } from "react-native";
 import { Icon } from "native-base";
 
 //Local Imports
@@ -11,19 +11,32 @@ import color from "../constants/color";
 import HomeScreen from "../screens/appScreens/HomeScreen";
 import CreateListScreen from "../screens/appScreens/ListScreen/CreateListScreen";
 import ListScreen from "../screens/appScreens/ListScreen/ListScreen";
-import ListShowScreen from '../screens/appScreens/ListScreen/ListShowScreen'
+import ListShowScreen from "../screens/appScreens/ListScreen/ListShowScreen";
 import SideMenu from "../screens/appScreens/SideMenu";
+import CartScreen from "../screens/appScreens/CartScreen";
+import BarCodeScannerScreen from '../screens/appScreens/ScannerScreen'
 
 const options = {
     headerShown: false,
 };
+const headerRight = (navigation) => {
+    // console.log(navigation)
+    return (
+        <TouchableOpacity style={{ paddingRight: 15 }} onPress={() => navigation.navigate("Cart")}>
+            <Icon type="FontAwesome" name="shopping-cart" />
+        </TouchableOpacity>
+    )
+}
 
 // Stack Navigators
 const HomeStackNavigator = createStackNavigator(
     {
         Home: {
             screen: HomeScreen,
-            navigationOptions: options,
+            navigationOptions: ({ navigation }) => ({
+                headerRight: ()  => headerRight(navigation),
+
+            }),
         },
     },
     {
@@ -34,19 +47,33 @@ const ListStackNavigator = createStackNavigator(
     {
         List: {
             screen: ListScreen,
-            navigationOptions: options,
+            navigationOptions: ({ navigation }) => ({
+                headerRight: ()  => headerRight(navigation),
+                title: ""
+            }),
         },
         CreateList: {
             screen: CreateListScreen,
             navigationOptions: options,
         },
         ListShow: {
-          screen: ListShowScreen,
-          navigationOptions: options,
-      },
+            screen: ListShowScreen,
+            navigationOptions: options,
+        },
     },
     {
         initialRouteName: "List",
+    },
+);
+const BarcodeScannerStackNavigator = createStackNavigator(
+    {
+        BarcodeScanner: {
+            screen: BarCodeScannerScreen,
+            navigationOptions: options,
+        },
+    },
+    {
+        initialRouteName: "BarcodeScanner",
     },
 );
 // Tab Navigator
@@ -64,6 +91,13 @@ const AppTabNavigator = createBottomTabNavigator(
             navigationOptions: {
                 tabBarLabel: "List",
                 tabBarIcon: () => <Icon type="FontAwesome" name="edit" style={{ color: color[5] }} />,
+            },
+        },
+        BarcodeScanner: {
+            screen: BarcodeScannerStackNavigator,
+            navigationOptions: {
+                tabBarLabel: "Barcode",
+                tabBarIcon: () => <Icon type="FontAwesome" name="barcode" style={{ color: color[5] }} />,
             },
         },
     },
@@ -85,10 +119,10 @@ const MainStackNavigator = createStackNavigator(
             screen: AppTabNavigator,
             navigationOptions: options,
         },
-        // Cart: {
-        //   screen: CartScreen,
-        //   navigationOptions: options,
-        // },
+        Cart: {
+            screen: CartScreen,
+            navigationOptions: options,
+        },
     },
     {
         initialRouteName: "Home",

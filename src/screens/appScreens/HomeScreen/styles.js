@@ -8,7 +8,5 @@ export default styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: color[5],
-        // padding: viewPadding,
-        paddingTop: 20,
     },
 })

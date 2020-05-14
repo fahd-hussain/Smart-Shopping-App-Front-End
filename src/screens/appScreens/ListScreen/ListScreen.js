@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Text, Button, View, FlatList, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
-import { Card } from "native-base";
+import { Card, Right } from "native-base";
+import GestureRecognizer, { swipeDirections } from "react-native-swipe-gestures";
 
 // Local Imports
 import styles from "./styles";
@@ -12,6 +13,10 @@ class ListScreen extends Component {
         super(props);
         this.state = {
             allList: this.props.allList.allList,
+            config: {
+                velocityThreshold: 0.3,
+                directionalOffsetThreshold: 80,
+            },
         };
     }
     UNSAFE_componentWillMount = () => {
@@ -19,14 +24,30 @@ class ListScreen extends Component {
     };
 
     navigateToShowList = (item) => {
-        this.props.navigation.navigate("ListShow", item)
-    }
+        this.props.navigation.navigate("ListShow", item);
+    };
 
+    onSwipeLeft = () => {
+        this.props.navigation.navigate("BarcodeScanner")
+    }
+    onSwipeRight = () => {
+        this.props.navigation.navigate("Home")
+    }
+    onSwipeDown = () => {
+        console.log("Down")
+        this.props.getAllList(this.props.token.token);
+    }
     render() {
         // console.log(this.state.allList);
         const list = this.props.allList.allList;
         return (
-            <View style={[styles.container, { paddingBottom: this.state.viewPadding }]}>
+            <GestureRecognizer
+                onSwipeLeft={this.onSwipeLeft}
+                onSwipeRight={this.onSwipeRight}
+                onSwipeDown={this.onSwipeDown}
+                config={this.state.config}
+                style={[styles.container, { paddingBottom: this.state.viewPadding }]}
+            >
                 <FlatList
                     style={styles.list}
                     data={list}
@@ -50,7 +71,7 @@ class ListScreen extends Component {
                 <View style={styles.createListBtn}>
                     <Button title="+" onPress={() => this.props.navigation.navigate("CreateList")} />
                 </View>
-            </View>
+            </GestureRecognizer>
         );
     }
 }

@@ -32,7 +32,7 @@ export const getAllList = (token) => (dispatch) => {
     })
     .then(res => {
         const allList = res.data
-        console.log(res.data)
+        // console.log(res.data)
         dispatch(all_list_success(allList))
     })
     .catch(error => {

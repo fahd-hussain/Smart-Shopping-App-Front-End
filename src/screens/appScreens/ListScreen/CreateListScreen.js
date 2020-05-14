@@ -9,7 +9,7 @@ import styles from "./styles";
 
 class CreateListScreen extends Component {
     state = {
-        tasks: this.props.list.list,
+        tasks: [],
         text: "",
         unitType: "mass",
         unitName: "",
@@ -25,7 +25,7 @@ class CreateListScreen extends Component {
                     let { tasks, text, unitType, unitName, unit } = prevState;
                     return {
                         tasks: tasks.concat({
-                            key: tasks.length,
+                            key: tasks.length+1,
                             text,
                             unitType,
                             unitName,
@@ -89,7 +89,7 @@ class CreateListScreen extends Component {
     };
 
     selector = (type) => {
-        console.log(type)
+        // console.log(type)
         switch (type) {
             case "mass":
                 return (
@@ -140,14 +140,16 @@ class CreateListScreen extends Component {
     };
 
     render() {
-        console.log(this.state)
+        const list = this.props.list.list
+        // console.log(list)
         return (
             <View style={[styles.container, { paddingBottom: this.state.viewPadding }]}>
                 <FlatList
                     style={styles.list}
-                    data={this.state.tasks}
-                    keyExtractor={(item) => "" + item.key}
+                    data={list}
+                    keyExtractor={ item => ""+item.key}
                     renderItem={({ item, index }) => (
+                        // console.log(item.item)
                         <TouchableOpacity onLongPress={() => this.deleteTask(index)}>
                             <Card style={{ paddingHorizontal: 10 }}>
                                 <View style={styles.listItemCont}>

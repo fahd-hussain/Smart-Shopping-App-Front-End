@@ -32,4 +32,11 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(AuthLoading);
+const mapDispatchToProps = (dispatch) => {
+  return {
+      getAllList: (token) => dispatch(getAllList(token)),
+      fetchPromotions: () => dispatch(fetchPromotions()),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AuthLoading);

@@ -7,11 +7,11 @@ import { Card } from "native-base";
 import styles from "./styles";
 import { updateCart } from "../../../redux";
 
-class ListShowScreen extends Component {
+class CartScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            list: this.props.navigation.state.params.list,
+            list: [],
         };
     }
     render() {
@@ -53,4 +53,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ListShowScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(CartScreen);
