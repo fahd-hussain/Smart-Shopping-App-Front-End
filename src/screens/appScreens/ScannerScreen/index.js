@@ -4,24 +4,22 @@ import { View, Text, Icon } from "native-base";
 import * as Permissions from "expo-permissions";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import GestureRecognizer, { swipeDirections } from "react-native-swipe-gestures";
+import { connect } from "react-redux";
 
-import { styles } from './styles'
+// Local Imports
+import { styles } from "./styles";
+import { updateCart } from "../../../redux";
 
-export default class BarCodeScannerScreen extends Component {
+class BarCodeScannerScreen extends Component {
     state = {
         hasCameraPermission: null,
         scanned: false,
-        tasks: [],
-        text: "",
-        unitType: "mass",
-        unitName: "",
-        unit: "",
         barcode: "",
-        price: 0.0,
+        cart: [],
         config: {
             velocityThreshold: 0.3,
             directionalOffsetThreshold: 80,
-        }
+        },
     };
 
     componentDidMount() {
@@ -32,21 +30,27 @@ export default class BarCodeScannerScreen extends Component {
         const { status } = await Permissions.askAsync(Permissions.CAMERA);
         this.setState({ hasCameraPermission: status === "granted" });
     };
+
     onSwipeRight = () => {
-        this.props.navigation.navigate("List")
-    }
+        this.props.navigation.navigate("List");
+    };
+
     render() {
         const { hasCameraPermission, scanned } = this.state;
 
         if (hasCameraPermission === null) {
-            return <View style={styles.container}>
-                <Text>Requesting for camera permission</Text>
-            </View>
+            return (
+                <View style={styles.container}>
+                    <Text>Requesting for camera permission</Text>
+                </View>
+            );
         }
         if (hasCameraPermission === false) {
-            return <View style={ styles.container }>
-                <Text>No access to camera</Text>
-            </View>
+            return (
+                <View style={styles.container}>
+                    <Text>No access to camera</Text>
+                </View>
+            );
         }
         return (
             <GestureRecognizer
@@ -62,6 +66,12 @@ export default class BarCodeScannerScreen extends Component {
             </GestureRecognizer>
         );
     }
+
+    handleBarCodeScanned = ({ data }) => {
+        this.setState({ scanned: true });
+        this.showAlert(data);
+    };
+
     showAlert(data) {
         Alert.alert("Alert", data, [
             {
@@ -72,16 +82,38 @@ export default class BarCodeScannerScreen extends Component {
             {
                 text: "Add to Cart",
                 onPress: () => {
-                    this.changeTextHandler(data);
-                    this.addTask();
-                    this.setState({ scanned: false });
+                    this.setState({ scanned: false, barcode: data });
+                    this.addToList();
                 },
             },
         ]);
     }
 
-    handleBarCodeScanned = ({ data }) => {
-        this.setState({ scanned: true });
-        this.showAlert(data);
+    addToList = () => {
+        const notEmpty = this.state.barcode.trim().length > 0;
+
+        if (notEmpty) {
+            this.setState(
+                (prevState) => {
+                    let { cart, barcode } = prevState;
+                    return {
+                        cart: cart.concat({
+                            key: cart.length + 1,
+                            barcode
+                        }),
+                        barcode: "",
+                    };
+                },
+                () => this.props.updateCart(this.state.cart),
+            );
+        }
     };
 }
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateCart: (data) => dispatch(updateCart(data)),
+    };
+};
+
+export default connect(null, mapDispatchToProps)(BarCodeScannerScreen);

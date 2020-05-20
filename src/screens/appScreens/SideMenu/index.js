@@ -5,7 +5,7 @@ import { Avatar, Modal } from "react-native-paper";
 import { connect } from "react-redux";
 
 // Local Imports
-import { removeToken } from "../../../redux";
+import { removeToken, updateCart } from "../../../redux";
 import styles from "./styles";
 import { aboutUs } from './aboutUs'
 // import { images } from "../../constants/images";
@@ -127,6 +127,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         removeToken: () => dispatch(removeToken()),
+        updateCart: () => dispatch(updateCart())
     };
 };
 

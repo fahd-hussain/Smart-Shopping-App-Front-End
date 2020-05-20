@@ -1,19 +1,22 @@
 import React, { Component } from "react";
-import { Text, View, FlatList, Alert, TextInput, Picker, TouchableOpacity } from "react-native";
+import { Text, View, FlatList, Alert, TextInput, Picker, TouchableOpacity, Button, Modal } from "react-native";
 import { connect } from "react-redux";
 import { Card } from "native-base";
-
+import axios from "axios";
 // local imports
 import { updateList } from "../../../redux";
 import styles from "./styles";
+import baseUrl from "../../../constants/baseUrl";
 
 class CreateListScreen extends Component {
     state = {
-        tasks: [],
+        tasks: this.props.list.list,
         text: "",
         unitType: "mass",
         unitName: "",
         unit: "",
+        name: "",
+        modalVisible: false,
     };
 
     addTask = () => {
@@ -25,7 +28,7 @@ class CreateListScreen extends Component {
                     let { tasks, text, unitType, unitName, unit } = prevState;
                     return {
                         tasks: tasks.concat({
-                            key: tasks.length+1,
+                            key: tasks.length + 1,
                             text,
                             unitType,
                             unitName,
@@ -72,20 +75,35 @@ class CreateListScreen extends Component {
         );
     };
 
-    pushToDatabase = async () => {
-        console.log("Push");
+    toggleModel = () => {
+        this.setState({ modalVisible: !this.state.modalVisible });
+    };
+    resetList = () => {
+        this.setState({
+            tasks: [],
+            modalVisible: false
+        });
+        this.props.updateList(this.state.tasks)
+    };
+    pushToDatabase = () => {
+        const { name, tasks } = this.state;
         const userToken = this.props.token.token;
-        console.log(userToken);
-        // fetch("https://smartshoppingapp.herokuapp.com/createList", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     Authorization: userToken,
-        //   },
-        //   body: JSON.stringify({
-        //     content: this.state.tasks,
-        //   }),
-        // });
+        console.log(name, tasks)
+        // axios(baseUrl + "lists", {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //         Authorization: userToken,
+        //     },
+        //     data: JSON.stringify({ name, tasks }),
+        // })
+        //     .then((res) => {
+        //         console.log("Pushed");
+        //     })
+        //     .catch((error) => {
+        //         console.log("error", error);
+        //     });
+        this.resetList()
     };
 
     selector = (type) => {
@@ -140,21 +158,24 @@ class CreateListScreen extends Component {
     };
 
     render() {
-        const list = this.props.list.list
+        const list = this.state.tasks;
         // console.log(list)
         return (
             <View style={[styles.container, { paddingBottom: this.state.viewPadding }]}>
+                <Button title="Push me" onPress={this.toggleModel} />
                 <FlatList
                     style={styles.list}
                     data={list}
-                    keyExtractor={ item => ""+item.key}
+                    keyExtractor={(item) => "" + item.key}
                     renderItem={({ item, index }) => (
                         // console.log(item.item)
                         <TouchableOpacity onLongPress={() => this.deleteTask(index)}>
                             <Card style={{ paddingHorizontal: 10 }}>
                                 <View style={styles.listItemCont}>
                                     <Text style={styles.listItem}>{item.text}</Text>
-                                    <Text>{item.unit} {item.unitName}</Text>
+                                    <Text>
+                                        {item.unit} {item.unitName}
+                                    </Text>
                                 </View>
                                 <View style={styles.hr} />
                             </Card>
@@ -198,6 +219,24 @@ class CreateListScreen extends Component {
                         />
                     </View>
                 ) : null}
+                <Modal
+                    visible={this.state.modalVisible}
+                    transparent={false}
+                    animationType={"slide"}
+                    onDismiss={this.toggleModel}
+                    onRequestClose={this.toggleModel}
+                >
+                    <View style={styles.container}>
+                        <Text style={styles.listItem}>Enter name of you list</Text>
+                        <TextInput
+                            style={styles.hideInput}
+                            onChangeText={(name) => this.setState({ name })}
+                            value={this.state.name}
+                            placeholder="List Name"
+                        />
+                        <Button title="Done" onPress={this.pushToDatabase} />
+                    </View>
+                </Modal>
             </View>
         );
     }

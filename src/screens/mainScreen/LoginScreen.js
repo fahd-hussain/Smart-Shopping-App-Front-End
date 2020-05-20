@@ -73,12 +73,12 @@ export class LoginScreen extends Component {
               style={styles.TextInput}
               theme={{ colors: { primary: color[3] } }}
             />
-            <View style={styles.rowFlex}>
+            <View style={styles.rowButtonFlex}>
               <Button
                 mode="contained"
                 style={styles.TextInput}
                 onPress={() => this.sendCred()}
-                theme={{ colors: { primary: color[3] } }}
+                theme={{ colors: { primary: color[1] } }}
               >LOGIN</Button>
               <Button
                 mode="contained"

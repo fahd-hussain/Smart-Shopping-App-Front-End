@@ -23,9 +23,8 @@ const tokenFailure = (error) => {
   };
 };
 
-export const getToken = (username, password, callback) => (dispatch) => {
+export const getToken = (username, password) => (dispatch) => {
   dispatch(tokenRequest());
-  // callback()
   return axios(baseUrl + "users/login", {
     method: "POST",
     headers: {

@@ -5,13 +5,13 @@ import { Card } from "native-base";
 
 // Local Imports
 import styles from "./styles";
-import { updateCart } from "../../../redux";
+import { updateCart, emptyCart } from "../../../redux";
 
 class CartScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            list: [],
+            cartItems: this.props.cart.cart,
         };
     }
     render() {
@@ -19,13 +19,13 @@ class CartScreen extends Component {
             <View style={[styles.container, { paddingBottom: this.state.viewPadding }]}>
                 <FlatList
                     style={styles.list}
-                    data={this.state.list}
+                    data={this.state.cartItems}
                     keyExtractor={(item) => "" + item.key}
                     renderItem={({ item, index }) => (
                         <Card style={{ paddingHorizontal: 10 }}>
                             <View style={styles.listItemCont}>
-                                <Text style={styles.listItem}>{item.text}</Text>
-                                <Text>{item.unit} {item.unitName}</Text>
+                                <Text style={styles.listItem}>{item.barcode}</Text>
+                                {/* <Text>{item.unit} {item.unitName}</Text> */}
                             </View>
                             <View style={styles.hr} />
                         </Card>
@@ -36,6 +36,7 @@ class CartScreen extends Component {
                         </View>
                     }
                 />
+                <Button title="Empty cart" onPress={() => this.props.emptyCart()}/>
             </View>
         );
     }
@@ -50,6 +51,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         updateCart: (data) => dispatch(updateCart(data)),
+        emptyCart: () => dispatch(emptyCart())
     };
 };
 

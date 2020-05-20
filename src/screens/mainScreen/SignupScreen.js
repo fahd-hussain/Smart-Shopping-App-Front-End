@@ -7,6 +7,7 @@ import { connect } from "react-redux";
 import { setToken } from "../../redux";
 import styles from "./styles";
 import LoadingScreen from "../../components/Loading";
+import color from "../../constants/color";
 
 export class SignupScreen extends Component {
   constructor(props) {
@@ -42,7 +43,7 @@ export class SignupScreen extends Component {
                 mode="outlined"
                 value={firstname}
                 style={styles.TextInput2}
-                theme={{ colors: { primary: "#447ab4" } }}
+                theme={{ colors: { primary: color[3] } }}
                 onChangeText={(firstname) => this.setState({ firstname })}
               />
               <TextInput
@@ -50,18 +51,18 @@ export class SignupScreen extends Component {
                 mode="outlined"
                 value={lastname}
                 style={styles.TextInput2}
-                theme={{ colors: { primary: "#447ab4" } }}
+                theme={{ colors: { primary: color[3] } }}
                 onChangeText={(lastname) => this.setState({ lastname })}
               />
             </View>
-            <View style={styles.rowFlex}>
+            <View style={styles.radioButton}>
               <RadioButton
                 value="Male"
                 status={gender === "male" ? "checked" : "unchecked"}
                 onPress={() => {
                   this.setState({ gender: "male" });
                 }}
-                theme={{ colors: { primary: "#447ab4" } }}
+                theme={{ colors: { primary: color[3] } }}
               />
               <Text style={{ marginTop: 8, color: "black" }}>Male</Text>
               <RadioButton
@@ -70,7 +71,7 @@ export class SignupScreen extends Component {
                 onPress={() => {
                   this.setState({ gender: "female" });
                 }}
-                theme={{ colors: { primary: "#447ab4" } }}
+                theme={{ colors: { primary: color[3] } }}
               />
               <Text style={{ marginTop: 8, color: "black" }}>Female</Text>
             </View>
@@ -84,7 +85,7 @@ export class SignupScreen extends Component {
               autoCapitalize="none"
               onChangeText={(username) => this.setState({ username })}
               style={styles.TextInput}
-              theme={{ colors: { primary: "#447ab4" } }}
+              theme={{ colors: { primary: color[3] } }}
             />
             <TextInput
               label="Password"
@@ -92,15 +93,15 @@ export class SignupScreen extends Component {
               mode="outlined"
               value={password}
               style={styles.TextInput}
-              theme={{ colors: { primary: "#447ab4" } }}
+              theme={{ colors: { primary: color[3] } }}
               onChangeText={(password) => this.setState({ password })}
             />
-            <View style={styles.rowFlex}>
+            <View style={styles.rowButtonFlex}>
               <Button
                 mode="contained"
                 style={styles.TextInput}
                 onPress={() => this.sendCred()}
-                theme={{ colors: { primary: "#54B0F3" } }}
+                theme={{ colors: { primary: color[1] } }}
               >
                 SIGNUP
               </Button>
@@ -108,7 +109,7 @@ export class SignupScreen extends Component {
                 mode="contained"
                 style={styles.TextInput}
                 onPress={() => this.props.navigation.navigate("Login")}
-                theme={{ colors: { primary: "#B1C5C4" } }}
+                theme={{ colors: { primary: color[3] } }}
               >
                 Login
               </Button>

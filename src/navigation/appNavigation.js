@@ -16,8 +16,11 @@ import SideMenu from "../screens/appScreens/SideMenu";
 import CartScreen from "../screens/appScreens/CartScreen";
 import BarCodeScannerScreen from '../screens/appScreens/ScannerScreen'
 
+const optionsTabs = {
+    headerShown: false
+};
 const options = {
-    headerShown: false,
+    headerTitle: ''
 };
 const headerRight = (navigation) => {
     // console.log(navigation)
@@ -35,7 +38,6 @@ const HomeStackNavigator = createStackNavigator(
             screen: HomeScreen,
             navigationOptions: ({ navigation }) => ({
                 headerRight: ()  => headerRight(navigation),
-
             }),
         },
     },
@@ -49,12 +51,11 @@ const ListStackNavigator = createStackNavigator(
             screen: ListScreen,
             navigationOptions: ({ navigation }) => ({
                 headerRight: ()  => headerRight(navigation),
-                title: ""
             }),
         },
         CreateList: {
             screen: CreateListScreen,
-            navigationOptions: options,
+            navigationOptions: options
         },
         ListShow: {
             screen: ListShowScreen,
@@ -69,7 +70,7 @@ const BarcodeScannerStackNavigator = createStackNavigator(
     {
         BarcodeScanner: {
             screen: BarCodeScannerScreen,
-            navigationOptions: options,
+            navigationOptions: optionsTabs,
         },
     },
     {
@@ -117,7 +118,7 @@ const MainStackNavigator = createStackNavigator(
     {
         Home: {
             screen: AppTabNavigator,
-            navigationOptions: options,
+            navigationOptions: optionsTabs,
         },
         Cart: {
             screen: CartScreen,
