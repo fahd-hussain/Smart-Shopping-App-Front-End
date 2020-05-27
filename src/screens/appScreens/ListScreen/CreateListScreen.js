@@ -1,47 +1,44 @@
 import React, { Component } from "react";
-import { Text, View, FlatList, Alert, TextInput, Picker, TouchableOpacity, Button, Modal } from "react-native";
+import { Text, View, FlatList, Alert, Picker, TextInput, TouchableOpacity, Modal } from "react-native";
 import { connect } from "react-redux";
-import { Card } from "native-base";
+import { Card, Left, Right, Fab } from "native-base";
+import { Button } from "react-native-paper";
 import axios from "axios";
 // local imports
-import { updateList } from "../../../redux";
+import { updateList, getStore } from "../../../redux";
 import styles from "./styles";
 import baseUrl from "../../../constants/baseUrl";
+import color from "../../../constants/color";
 
 class CreateListScreen extends Component {
     state = {
-        tasks: this.props.list.list,
-        text: "",
-        unitType: "mass",
-        unitName: "",
-        unit: "",
-        name: "",
-        modalVisible: false,
+        listItems: this.props.list.list,
+        itemName: "",
+        quantity: 1,
+        addItemModal: false,
+        pushDatabaseModal: false,
+        store: this.props.store.store,
+        data: [],
     };
 
     addTask = () => {
-        const notEmpty = this.state.text.trim().length > 0;
+        const notEmpty = this.state.itemName.trim().length > 0;
 
         if (notEmpty) {
             this.setState(
                 (prevState) => {
-                    let { tasks, text, unitType, unitName, unit } = prevState;
+                    let { listItems, itemName, quantity } = prevState;
                     return {
-                        tasks: tasks.concat({
-                            key: tasks.length + 1,
-                            text,
-                            unitType,
-                            unitName,
-                            unit,
+                        listItems: listItems.concat({
+                            key: listItems.length + 1,
+                            itemName,
+                            quantity,
                         }),
-                        text: "",
-                        text: "",
-                        unitType: "mass",
-                        unitName: "",
-                        unit: "",
+                        itemName: "",
+                        quantity: 1,
                     };
                 },
-                () => this.props.updateList(this.state.tasks),
+                () => this.props.updateList(this.state.listItems),
             );
         }
     };
@@ -52,21 +49,21 @@ class CreateListScreen extends Component {
             "Are you sure you want to delete this item from the list?",
             [
                 {
-                    text: "Cancel",
+                    itemName: "Cancel",
                     style: "cancel",
                 },
                 {
-                    text: "OK",
+                    itemName: "OK",
                     onPress: () => {
                         this.setState(
                             (prevState) => {
-                                let tasks = prevState.tasks.slice();
+                                let listItems = prevState.listItems.slice();
 
-                                tasks.splice(i, 1);
+                                listItems.splice(i, 1);
 
-                                return { tasks: tasks };
+                                return { listItems: listItems };
                             },
-                            () => this.props.updateList(this.state.tasks),
+                            () => this.props.updateList(this.state.listItems),
                         );
                     },
                 },
@@ -75,109 +72,88 @@ class CreateListScreen extends Component {
         );
     };
 
-    toggleModel = () => {
-        this.setState({ modalVisible: !this.state.modalVisible });
+    toggleModel = (modal) => {
+        switch (modal) {
+            case "addItem":
+                this.setState({ addItemModal: !this.state.addItemModal });
+                return;
+            case "pushDatabase":
+                this.setState({ pushDatabaseModal: !this.state.pushDatabaseModal });
+                return;
+            default:
+                return;
+        }
     };
+
     resetList = () => {
         this.setState({
-            tasks: [],
-            modalVisible: false
-        });
-        this.props.updateList(this.state.tasks)
+            itemName: '',
+            listItems: [],
+            pushDatabaseModal: false,
+        },
+        () => this.props.updateList(this.state.listItems));
     };
+
     pushToDatabase = () => {
-        const { name, tasks } = this.state;
+        const { name, listItems } = this.state;
         const userToken = this.props.token.token;
-        console.log(name, tasks)
-        // axios(baseUrl + "lists", {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //         Authorization: userToken,
-        //     },
-        //     data: JSON.stringify({ name, tasks }),
-        // })
-        //     .then((res) => {
-        //         console.log("Pushed");
-        //     })
-        //     .catch((error) => {
-        //         console.log("error", error);
-        //     });
-        this.resetList()
+        console.log(JSON.stringify({ name, listItems }));
+        console.log(`${baseUrl}lists`)
+        axios(`${baseUrl}lists`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: userToken,
+            },
+            data: JSON.stringify({ name, listItems }),
+        })
+            .then((res) => {
+                console.log("Pushed");
+            })
+            .catch((error) => {
+                console.log("error", error);
+            });
+        this.resetList();
     };
 
-    selector = (type) => {
-        // console.log(type)
-        switch (type) {
-            case "mass":
-                return (
-                    <Picker
-                        selectedValue={this.state.unitName}
-                        style={styles.hideInput}
-                        onValueChange={(itemValue, itemIndex) => this.setState({ unitName: itemValue })}
-                    >
-                        {MASS.map((ele) => {
-                            return <Picker.Item label={ele.label} value={ele.value} key={ele.value} />;
-                        })}
-                    </Picker>
-                );
-            case "volume":
-                return (
-                    <Picker
-                        accessibilityValue={this.state.unitName}
-                        selectedValue={this.state.unitName}
-                        style={styles.hideInput}
-                        onValueChange={(itemValue, itemIndex) => this.setState({ unitName: itemValue })}
-                    >
-                        {VOLUME.map((ele) => {
-                            // console.log(ele.label, ele.value)
-                            return <Picker.Item label={ele.label} value={ele.value} key={ele.value} />;
-                        })}
-                    </Picker>
-                );
-            case "packet":
-                return (
-                    <Picker
-                        selectedValue={this.state.unitName}
-                        style={styles.hideInput}
-                        onValueChange={(itemValue, itemIndex) => this.setState({ unitName: itemValue })}
-                    >
-                        {PACKET.map((ele) => {
-                            return <Picker.Item label={ele.label} value={ele.value} key={ele.value} />;
-                        })}
-                    </Picker>
-                );
+    componentDidMount = () => {
+        this.props.getStore();
+    };
 
-            default:
-                return (
-                    <View>
-                        <Text>Empty list</Text>
-                    </View>
-                );
+    searchFilterFunction = (text) => {
+        this.setState({
+            itemName: text,
+        });
+        if (this.state.store.length > 0) {
+            const newData = this.state.store.filter((item) => {
+                const itemData = item.name.toUpperCase();
+                const textData = text.toUpperCase();
+
+                return itemData.indexOf(textData) > -1;
+            });
+            this.setState({
+                data: newData,
+            });
         }
     };
 
     render() {
-        const list = this.state.tasks;
-        // console.log(list)
+        const list = this.state.listItems;
+        // console.log(this.props.store);
         return (
             <View style={[styles.container, { paddingBottom: this.state.viewPadding }]}>
-                <Button title="Push me" onPress={this.toggleModel} />
                 <FlatList
                     style={styles.list}
                     data={list}
                     keyExtractor={(item) => "" + item.key}
                     renderItem={({ item, index }) => (
-                        // console.log(item.item)
                         <TouchableOpacity onLongPress={() => this.deleteTask(index)}>
                             <Card style={{ paddingHorizontal: 10 }}>
                                 <View style={styles.listItemCont}>
-                                    <Text style={styles.listItem}>{item.text}</Text>
-                                    <Text>
-                                        {item.unit} {item.unitName}
-                                    </Text>
+                                    <Text style={styles.listItem}>{item.itemName}</Text>
+                                    <Text>{item.quantity}</Text>
                                 </View>
-                                <View style={styles.hr} />
+                                {/* <View style={styles.hr} /> */}
                             </Card>
                         </TouchableOpacity>
                     )}
@@ -187,44 +163,92 @@ class CreateListScreen extends Component {
                         </View>
                     }
                 />
-                <TextInput
-                    style={styles.textInput}
-                    onChangeText={(text) => this.setState({ text })}
-                    value={this.state.text}
-                    placeholder="Add Item"
-                    returnKeyType="next"
-                    returnKeyLabel="next"
-                />
-                {this.state.text ? (
-                    <View flexDirection="row">
-                        <Picker
-                            selectedValue={this.state.unitType}
-                            style={styles.hideInput}
-                            onValueChange={(itemValue, itemIndex) => this.setState({ unitType: itemValue })}
+                <View style={styles.listItemCont}>
+                    <Left style={{ width: 100 }}>
+                        <Button
+                            style={{ backgroundColor: color[3], width: 150 }}
+                            color={color[4]}
+                            onPress={() => this.toggleModel("addItem")}
                         >
-                            <Picker.Item label="Select" />
-                            <Picker.Item label="Mass" value="mass" />
-                            <Picker.Item label="Volume" value="volume" />
-                            <Picker.Item label="Packet" value="packet" />
-                        </Picker>
-                        {this.selector(this.state.unitType)}
+                            Add Item
+                        </Button>
+                    </Left>
+                    <Right>
+                        <Button
+                            style={{ backgroundColor: color[3], width: 150 }}
+                            color={color[4]}
+                            onPress={() => this.toggleModel("pushDatabase")}
+                        >
+                            Done
+                        </Button>
+                    </Right>
+                </View>
+                {/* Add item modal */}
+                <Modal
+                    visible={this.state.addItemModal}
+                    onDismiss={() => this.toggleModel("addItem")}
+                    onRequestClose={() => this.toggleModel("addItem")}
+                    animationType={"fade"}
+                >
+                    <View style={(styles.container, { paddingBottom: this.state.viewPadding })}>
                         <TextInput
-                            style={styles.hideInput}
-                            onChangeText={(unit) => this.setState({ unit })}
-                            onSubmitEditing={this.addTask}
-                            value={this.state.unit}
-                            placeholder="Unit"
-                            returnKeyType="done"
-                            returnKeyLabel="done"
+                            style={styles.textInput}
+                            onChangeText={(text) => this.searchFilterFunction(text)}
+                            value={this.state.itemName}
+                            placeholder="Add Item"
+                            returnKeyType="next"
+                            returnKeyLabel="next"
+                        />
+                        <FlatList
+                            style={styles.list}
+                            data={this.state.data}
+                            keyExtractor={(item) => item._id}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity onPress={() => this.setState({ itemName: item.name })}>
+                                    <Card style={{ paddingHorizontal: 10 }}>
+                                        <View style={styles.listItemCont}>
+                                            <Text style={styles.listItem}>{item.name}</Text>
+                                        </View>
+                                        <View style={styles.hr} />
+                                    </Card>
+                                </TouchableOpacity>
+                            )}
+                            ListEmptyComponent={
+                                <View style={styles.emptyScreen}>
+                                    <Text>Type something for Suggestion</Text>
+                                </View>
+                            }
                         />
                     </View>
-                ) : null}
+                    <View style={styles.modalButtonsLeft}>
+                        <Button
+                            style={{ backgroundColor: color.danger, width: 150 }}
+                            color={color[4]}
+                            onPress={() => this.toggleModel("addItem")}
+                        >
+                            Cancel
+                        </Button>
+                    </View>
+                    <View style={styles.modalButtonsRight}>
+                        <Button
+                            style={{ backgroundColor: color[3], width: 150 }}
+                            color={color[4]}
+                            onPress={() => {
+                                this.addTask();
+                                this.toggleModel("addItem");
+                            }}
+                        >
+                            Add
+                        </Button>
+                    </View>
+                </Modal>
+                {/* Add list to database modal */}
                 <Modal
-                    visible={this.state.modalVisible}
+                    visible={this.state.pushDatabaseModal}
                     transparent={false}
-                    animationType={"slide"}
-                    onDismiss={this.toggleModel}
-                    onRequestClose={this.toggleModel}
+                    animationType={"fade"}
+                    onDismiss={() => this.toggleModel("pushDatabase")}
+                    onRequestClose={() => this.toggleModel("pushDatabase")}
                 >
                     <View style={styles.container}>
                         <Text style={styles.listItem}>Enter name of you list</Text>
@@ -234,7 +258,27 @@ class CreateListScreen extends Component {
                             value={this.state.name}
                             placeholder="List Name"
                         />
-                        <Button title="Done" onPress={this.pushToDatabase} />
+                    </View>
+                    <View style={styles.modalButtonsLeft}>
+                        <Button
+                            style={{ backgroundColor: color.danger, width: 150 }}
+                            color={color[4]}
+                            onPress={() => this.toggleModel("pushDatabase")}
+                        >
+                            Cancel
+                        </Button>
+                    </View>
+                    <View style={styles.modalButtonsRight}>
+                        <Button
+                            style={{ backgroundColor: color[3], width: 150 }}
+                            color={color[4]}
+                            onPress={() => {
+                                this.pushToDatabase();
+                                this.toggleModel("pushDatabase");
+                            }}
+                        >
+                            Add
+                        </Button>
                     </View>
                 </Modal>
             </View>
@@ -245,54 +289,13 @@ const mapStateToProps = (state) => {
     return {
         list: state.list,
         token: state.token,
+        store: state.store,
     };
 };
 const mapDispatchToProps = (dispatch) => {
     return {
         updateList: (data) => dispatch(updateList(data)),
+        getStore: () => dispatch(getStore()),
     };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(CreateListScreen);
-
-const MASS = [
-    {
-        label: "select",
-        value: "select",
-    },
-    {
-        label: "Kilo",
-        value: "kg",
-    },
-    {
-        label: "gram",
-        value: "gm",
-    },
-];
-const VOLUME = [
-    {
-        label: "select",
-        value: "select",
-    },
-    {
-        label: "Litre",
-        value: "litre",
-    },
-    {
-        label: "Gallon",
-        value: "gallon",
-    },
-];
-const PACKET = [
-    {
-        label: "select",
-        value: "select",
-    },
-    {
-        label: "Packet",
-        value: "packet",
-    },
-    {
-        label: "Box",
-        value: "box",
-    },
-];

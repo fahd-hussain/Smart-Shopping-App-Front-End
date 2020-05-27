@@ -5,17 +5,19 @@ import * as Permissions from "expo-permissions";
 import { BarCodeScanner } from "expo-barcode-scanner";
 import GestureRecognizer, { swipeDirections } from "react-native-swipe-gestures";
 import { connect } from "react-redux";
+import axios from 'axios'
 
 // Local Imports
 import { styles } from "./styles";
 import { updateCart } from "../../../redux";
+import baseUrl from "../../../constants/baseUrl";
 
 class BarCodeScannerScreen extends Component {
     state = {
         hasCameraPermission: null,
         scanned: false,
         barcode: "",
-        cart: [],
+        Cart: this.props.cart.cart,
         config: {
             velocityThreshold: 0.3,
             directionalOffsetThreshold: 80,
@@ -37,7 +39,7 @@ class BarCodeScannerScreen extends Component {
 
     render() {
         const { hasCameraPermission, scanned } = this.state;
-
+        // console.log(this.state.Cart)
         if (hasCameraPermission === null) {
             return (
                 <View style={styles.container}>
@@ -83,31 +85,67 @@ class BarCodeScannerScreen extends Component {
                 text: "Add to Cart",
                 onPress: () => {
                     this.setState({ scanned: false, barcode: data });
-                    this.addToList();
+                    this.fetchData();
                 },
             },
         ]);
     }
 
-    addToList = () => {
+    fetchData = () => {
         const notEmpty = this.state.barcode.trim().length > 0;
+        
+        if (notEmpty){
+            const barcode = this.state.barcode;
 
+            axios(baseUrl + "store/" + barcode, {
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": this.props.token.token
+                },
+            })
+            .then( res => {
+                // console.log(res.data)
+                this.addToCart(res.data)
+            })
+            .catch( error => {
+                console.log(error)
+            })
+        }
+    };
+
+    addToCart = (data) => {
+        const notEmpty = data.length > 0;
+        // console.log(data)
         if (notEmpty) {
+            const { name, barcode, _id, price, quantity, quantityType } = data[0]
+            // console.log(name, barcode, _id, price, quantity, quantityType)
             this.setState(
                 (prevState) => {
-                    let { cart, barcode } = prevState;
+                    let { Cart } = prevState;
                     return {
-                        cart: cart.concat({
-                            key: cart.length + 1,
-                            barcode
+                        Cart: Cart.concat({
+                            _id: _id,
+                            name: name, 
+                            barcode: barcode, 
+                            price: price, 
+                            quantity: quantity, 
+                            quantityType: quantityType
                         }),
                         barcode: "",
                     };
                 },
-                () => this.props.updateCart(this.state.cart),
+                () => this.props.updateCart(this.state.Cart),
             );
         }
     };
+}
+
+const mapStateToProps = (state) => {
+    return {
+        token: state.token,
+        cart: state.cart
+    }
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -116,4 +154,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(null, mapDispatchToProps)(BarCodeScannerScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(BarCodeScannerScreen);

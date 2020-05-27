@@ -1,12 +1,14 @@
 import React, { Component } from "react";
-import { Text, Button, View, FlatList, TouchableOpacity } from "react-native";
+import { Text, View, FlatList, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
-import { Card, Right } from "native-base";
+import { Card, Icon, Right } from "native-base";
+import { Button } from 'react-native-paper'
 import GestureRecognizer, { swipeDirections } from "react-native-swipe-gestures";
 
 // Local Imports
 import styles from "./styles";
 import { getAllList } from "../../../redux";
+import color from '../../../constants/color'
 
 class ListScreen extends Component {
     constructor(props) {
@@ -19,10 +21,12 @@ class ListScreen extends Component {
             },
         };
     }
-    UNSAFE_componentWillMount = () => {
+    componentDidMount = () => {
         this.props.getAllList(this.props.token.token);
     };
-
+    componentDidUpdate = () => {
+        this.props.getAllList(this.props.token.token);
+    };
     navigateToShowList = (item) => {
         this.props.navigation.navigate("ListShow", item);
     };
@@ -58,7 +62,7 @@ class ListScreen extends Component {
                                 <View style={styles.listItemCont}>
                                     <Text style={styles.listItem}>{item.name}</Text>
                                 </View>
-                                <View style={styles.hr} />
+                                {/* <View style={styles.hr} /> */}
                             </Card>
                         </TouchableOpacity>
                     )}
@@ -69,7 +73,12 @@ class ListScreen extends Component {
                     }
                 />
                 <View style={styles.createListBtn}>
-                    <Button title="+" onPress={() => this.props.navigation.navigate("CreateList")} />
+                    <Button 
+                        icon={() => <Icon type="FontAwesome" name="plus-circle" style={{ color: color[3], fontSize: 55 }} />}
+                        onPress={() => this.props.navigation.navigate("CreateList")}
+                        style={{ position: 'absolute', left: "32%", bottom: 0  }}
+                        color={color[5]}
+                    />
                 </View>
             </GestureRecognizer>
         );

@@ -11,16 +11,16 @@ import color from "../constants/color";
 import HomeScreen from "../screens/appScreens/HomeScreen";
 import CreateListScreen from "../screens/appScreens/ListScreen/CreateListScreen";
 import ListScreen from "../screens/appScreens/ListScreen/ListScreen";
-import ListShowScreen from "../screens/appScreens/ListScreen/ListShowScreen";
+import ListShowScreen from "../screens/appScreens/ListScreen/ListDetailScreen";
 import SideMenu from "../screens/appScreens/SideMenu";
 import CartScreen from "../screens/appScreens/CartScreen";
-import BarCodeScannerScreen from '../screens/appScreens/ScannerScreen'
+import BarCodeScannerScreen from "../screens/appScreens/ScannerScreen";
 
 const optionsTabs = {
-    headerShown: false
+    headerShown: false,
 };
 const options = {
-    headerTitle: ''
+    headerTitle: "",
 };
 const headerRight = (navigation) => {
     // console.log(navigation)
@@ -28,8 +28,8 @@ const headerRight = (navigation) => {
         <TouchableOpacity style={{ paddingRight: 15 }} onPress={() => navigation.navigate("Cart")}>
             <Icon type="FontAwesome" name="shopping-cart" />
         </TouchableOpacity>
-    )
-}
+    );
+};
 
 // Stack Navigators
 const HomeStackNavigator = createStackNavigator(
@@ -37,7 +37,7 @@ const HomeStackNavigator = createStackNavigator(
         Home: {
             screen: HomeScreen,
             navigationOptions: ({ navigation }) => ({
-                headerRight: ()  => headerRight(navigation),
+                headerRight: () => headerRight(navigation),
             }),
         },
     },
@@ -50,12 +50,12 @@ const ListStackNavigator = createStackNavigator(
         List: {
             screen: ListScreen,
             navigationOptions: ({ navigation }) => ({
-                headerRight: ()  => headerRight(navigation),
+                headerRight: () => headerRight(navigation),
             }),
         },
         CreateList: {
             screen: CreateListScreen,
-            navigationOptions: options
+            navigationOptions: options,
         },
         ListShow: {
             screen: ListShowScreen,

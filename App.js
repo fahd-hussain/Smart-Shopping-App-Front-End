@@ -8,6 +8,8 @@ import ConfigureStore from "./src/redux/configureStore";
 import LoadingScreen from "./src/components/Loading";
 const { persistor, store } = ConfigureStore();
 
+import Temp from './temp/temp';
+
 export default function App() {
   return (
     <Provider store={store}>
@@ -17,6 +19,7 @@ export default function App() {
       >
         <StatusBar hidden={true} />
         <AppContainer />
+        {/* <Temp /> */}
       </PersistGate>
     </Provider>
   );

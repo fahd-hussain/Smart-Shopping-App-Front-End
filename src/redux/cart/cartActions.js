@@ -27,6 +27,7 @@ const cartFailure = (error) => {
 
 export const updateCart = (data) => dispatch => {
     dispatch(cartRequest())
+    console.log(data)
     return dispatch(cartSuccess(data))
 }
 

@@ -1,0 +1,22 @@
+<ListView style={{position: 'absolute', width: this.state.TIWidth, backgroundColor: 'white', zIndex: 3}}
+              keyboardShouldPersistTaps={version >= '0.4.0' ? 'always' : true}
+              initialListSize={15}
+              enableEmptySections
+              dataSource={ds.cloneWithRows(this.state.results)}
+              renderRow={(rowData, sectionId, rowId, highlightRow) =>
+                      <RowWrapper
+                        styles={this.getCombinedStyles('rowWrapperStyles')}
+                      >
+                        <TouchableOpacity
+                          activeOpacity={0.5 /* when you touch it the text color grimaces */}
+                          onPress={() => {
+                            this.onItemPress(this.state.results[rowId])
+                            if (onItemPress) onItemPress(this.state.results[rowId])
+                          }
+                        }
+                          >
+                            <Text style={this.getCombinedStyles('rowTextStyles')}>{rowData}</Text>
+                          </TouchableOpacity>
+                      </RowWrapper>
+              }
+            />

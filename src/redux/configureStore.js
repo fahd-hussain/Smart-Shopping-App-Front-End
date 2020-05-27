@@ -9,8 +9,9 @@ import { userReducer } from "./user/userReducer";
 import { tokenReducer } from "./token/tokenReducer";
 import { listReducer } from "./list/listReducer";
 import { allListReducer } from "./allList/allListReducer";
-import { cartReducer } from './cart/cartReducer';
-import { promoReducer } from './promotion/promoReducer'
+import { cartReducer } from "./cart/cartReducer";
+import { promoReducer } from "./promotion/promoReducer";
+import { storeReducer } from "./store/storeReducer";
 
 export default ConfigureStore = () => {
     const config = {
@@ -26,11 +27,12 @@ export default ConfigureStore = () => {
             list: listReducer,
             allList: allListReducer,
             cart: cartReducer,
-            promo: promoReducer
+            promo: promoReducer,
+            store: storeReducer,
         }),
         applyMiddleware(
             thunk,
-            logger
+            // logger
         ),
     );
 

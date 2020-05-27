@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Text, Button, View, FlatList, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
-import { Card } from "native-base";
+import { Card, CardItem, Right, Left, Footer } from "native-base";
 
 // Local Imports
 import styles from "./styles";
@@ -12,22 +12,49 @@ class CartScreen extends Component {
         super(props);
         this.state = {
             cartItems: this.props.cart.cart,
+            totalCost: 0
         };
     }
+    incrementCount=()=>{
+        this.setState((prevState) => ({
+            quantity: parseInt(prevState.quantity) + 1
+        }));
+    }
+
     render() {
+        const { cartItems } = this.state;
+        let totalQuantity = 0;
+        let totalPrice = 0;
+        cartItems.forEach((item) => {
+            // totalQuantity += item.quantity;
+            totalPrice += item.price;
+        })
         return (
             <View style={[styles.container, { paddingBottom: this.state.viewPadding }]}>
                 <FlatList
                     style={styles.list}
                     data={this.state.cartItems}
-                    keyExtractor={(item) => "" + item.key}
+                    keyExtractor={(item) => "" + item._id}
                     renderItem={({ item, index }) => (
                         <Card style={{ paddingHorizontal: 10 }}>
-                            <View style={styles.listItemCont}>
-                                <Text style={styles.listItem}>{item.barcode}</Text>
-                                {/* <Text>{item.unit} {item.unitName}</Text> */}
-                            </View>
-                            <View style={styles.hr} />
+                            <CardItem header>
+                                <Left>
+                                    <Text style={styles.listItem}>{item.name}</Text>
+                                </Left>
+                                <Right>
+                                    <Text>{item.price}</Text>
+                                </Right>
+                            </CardItem>
+                            <CardItem bordered>
+                                <Left>
+                                    <Text>
+                                        {item.quantity} {item.quantityType}
+                                    </Text>
+                                </Left>
+                                <Right>
+                                    <Text>- 1 +</Text>
+                                </Right>
+                            </CardItem>
                         </Card>
                     )}
                     ListEmptyComponent={
@@ -36,7 +63,9 @@ class CartScreen extends Component {
                         </View>
                     }
                 />
-                <Button title="Empty cart" onPress={() => this.props.emptyCart()}/>
+                <Footer style={{ }}>
+                    <Button title={ "Check Out - " + totalPrice} />
+                </Footer>
             </View>
         );
     }
@@ -51,7 +80,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         updateCart: (data) => dispatch(updateCart(data)),
-        emptyCart: () => dispatch(emptyCart())
+        emptyCart: () => dispatch(emptyCart()),
     };
 };
 

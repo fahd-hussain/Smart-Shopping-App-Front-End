@@ -1,6 +1,6 @@
 const initState = {
   loading: false,
-  cart: "",
+  cart: [],
   error: "",
 };
 
