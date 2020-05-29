@@ -1,26 +1,37 @@
 import React, { Component } from "react";
-import { Text, View, FlatList, TouchableOpacity } from "react-native";
-import { connect } from "react-redux";
+import { Text, View, FlatList } from "react-native";
+import { Button } from 'react-native-paper'
 import { Card } from "native-base";
+import { connect } from "react-redux";
 // Local Imports
 import styles from "./styles";
 // import { getAllList } from "../../../redux";
 
 class ListShowScreen extends Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             list: this.props.navigation.state.params.listItems,
+            isLeading: false
         };
     }
+    componentDidMount = () => {
+        if (!this.state.list){
+            this.setState({ isLeading: true})
+        }
+    }
+    _findTheWay = () => {
+        const listId = this.props.navigation.state.params
+        console.log(listId._id)
+        this.props.navigation.navigate("Map", {listId: listId._id})
+    }
     render() {
-        // console.log(this.props.navigation)
         return (
             <View style={[styles.container, { paddingBottom: this.state.viewPadding }]}>
                 <FlatList
                     style={styles.list}
                     data={this.state.list}
-                    keyExtractor={(item) => "" + item._id}
+                    keyExtractor={(item, index) => String(index)}
                     renderItem={({ item, index }) => (
                         <Card style={{ paddingHorizontal: 10 }}>
                             <View style={styles.listItemCont}>
@@ -36,6 +47,7 @@ class ListShowScreen extends Component {
                         </View>
                     }
                 />
+                <Button onPress={this._findTheWay} >Find they WAY!</Button>
             </View>
         );
     }

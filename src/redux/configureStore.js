@@ -12,6 +12,7 @@ import { allListReducer } from "./allList/allListReducer";
 import { cartReducer } from "./cart/cartReducer";
 import { promoReducer } from "./promotion/promoReducer";
 import { storeReducer } from "./store/storeReducer";
+import { shelfReducer } from './shelf/shelfReducer'
 
 export default ConfigureStore = () => {
     const config = {

@@ -15,19 +15,14 @@ export class HomeScreen extends Component {
             config: {
                 velocityThreshold: 0.3,
                 directionalOffsetThreshold: 80,
-            }
+            },
         };
     }
     componentDidMount = () => {
         this.props.getAllList(this.props.token.token);
         this.props.fetchPromotions();
     };
-    onSwipeLeft = () => {
-        this.props.navigation.navigate("List");
-    }
-    onSwipeRight = () => {
-        this.props.navigation.openDrawer()
-    }
+    
     render() {
         const promo = this.props.promo.promotions;
         return (
@@ -55,48 +50,6 @@ export class HomeScreen extends Component {
                                             raised
                                             reverse
                                             // name={ props.favorite ? 'heart' : 'heart-o'}
-                                            name="heart-o"
-                                            type="FontAwesome"
-                                            color="#f50"
-                                            // onPress={() => props.favorite ? console.log("already fav") : props.onPress() }
-                                        />
-                                    </Right>
-                                </CardItem>
-                            </Card>
-                            <Card>
-                                <CardItem header>
-                                    <Text>{item.name}</Text>
-                                </CardItem>
-                                <CardItem body>
-                                    <Text>{item.description}</Text>
-                                </CardItem>
-                                <CardItem footer>
-                                    <Right>
-                                        <Icon
-                                            raised
-                                            reverse
-                                            // name={ props.favorite ? 'heart' : 'heart-o'}
-                                            name="heart"
-                                            type="FontAwesome"
-                                            color="#f50"
-                                            // onPress={() => props.favorite ? console.log("already fav") : props.onPress() }
-                                        />
-                                    </Right>
-                                </CardItem>
-                            </Card>
-                            <Card>
-                                <CardItem header>
-                                    <Text>{item.name}</Text>
-                                </CardItem>
-                                <CardItem body>
-                                    <Text>{item.description}</Text>
-                                </CardItem>
-                                <CardItem footer>
-                                    <Right>
-                                        <Icon
-                                            raised
-                                            reverse
-                                            // name={ props.favorite ? 'heart' : 'heart-o'}
                                             name="heart"
                                             type="FontAwesome"
                                             color="#f50"
@@ -111,6 +64,12 @@ export class HomeScreen extends Component {
             </GestureRecognizer>
         );
     }
+    onSwipeLeft = () => {
+        this.props.navigation.navigate("List");
+    };
+    onSwipeRight = () => {
+        this.props.navigation.openDrawer();
+    };
 }
 
 const mapStateToProps = (state) => {

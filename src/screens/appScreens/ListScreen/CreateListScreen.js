@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, FlatList, Alert, Picker, TextInput, TouchableOpacity, Modal } from "react-native";
+import { Text, View, FlatList, Alert, KeyboardAvoidingView, TextInput, TouchableOpacity, Modal } from "react-native";
 import { connect } from "react-redux";
 import { Card, Left, Right, Fab } from "native-base";
 import { Button } from "react-native-paper";
@@ -30,12 +30,12 @@ class CreateListScreen extends Component {
                     let { listItems, itemName, quantity } = prevState;
                     return {
                         listItems: listItems.concat({
-                            key: listItems.length + 1,
                             itemName,
                             quantity,
                         }),
                         itemName: "",
                         quantity: 1,
+                        data: []
                     };
                 },
                 () => this.props.updateList(this.state.listItems),
@@ -72,33 +72,22 @@ class CreateListScreen extends Component {
         );
     };
 
-    toggleModel = (modal) => {
-        switch (modal) {
-            case "addItem":
-                this.setState({ addItemModal: !this.state.addItemModal });
-                return;
-            case "pushDatabase":
-                this.setState({ pushDatabaseModal: !this.state.pushDatabaseModal });
-                return;
-            default:
-                return;
-        }
-    };
-
     resetList = () => {
-        this.setState({
-            itemName: '',
-            listItems: [],
-            pushDatabaseModal: false,
-        },
-        () => this.props.updateList(this.state.listItems));
+        this.setState(
+            {
+                itemName: "",
+                listItems: [],
+                pushDatabaseModal: false,
+            },
+            () => this.props.updateList(this.state.listItems),
+        );
     };
 
     pushToDatabase = () => {
         const { name, listItems } = this.state;
         const userToken = this.props.token.token;
         console.log(JSON.stringify({ name, listItems }));
-        console.log(`${baseUrl}lists`)
+        console.log(`${baseUrl}lists`);
         axios(`${baseUrl}lists`, {
             method: "POST",
             headers: {
@@ -114,6 +103,7 @@ class CreateListScreen extends Component {
                 console.log("error", error);
             });
         this.resetList();
+        this.props.navigation.navigate("List")
     };
 
     componentDidMount = () => {
@@ -139,13 +129,12 @@ class CreateListScreen extends Component {
 
     render() {
         const list = this.state.listItems;
-        // console.log(this.props.store);
         return (
             <View style={[styles.container, { paddingBottom: this.state.viewPadding }]}>
                 <FlatList
                     style={styles.list}
                     data={list}
-                    keyExtractor={(item) => "" + item.key}
+                    keyExtractor={(item, index) => String(index)}
                     renderItem={({ item, index }) => (
                         <TouchableOpacity onLongPress={() => this.deleteTask(index)}>
                             <Card style={{ paddingHorizontal: 10 }}>
@@ -168,7 +157,7 @@ class CreateListScreen extends Component {
                         <Button
                             style={{ backgroundColor: color[3], width: 150 }}
                             color={color[4]}
-                            onPress={() => this.toggleModel("addItem")}
+                            onPress={() => this.setState({ addItemModal: true })}
                         >
                             Add Item
                         </Button>
@@ -177,7 +166,7 @@ class CreateListScreen extends Component {
                         <Button
                             style={{ backgroundColor: color[3], width: 150 }}
                             color={color[4]}
-                            onPress={() => this.toggleModel("pushDatabase")}
+                            onPress={() => this.setState({ pushDatabaseModal: true })}
                         >
                             Done
                         </Button>
@@ -186,8 +175,8 @@ class CreateListScreen extends Component {
                 {/* Add item modal */}
                 <Modal
                     visible={this.state.addItemModal}
-                    onDismiss={() => this.toggleModel("addItem")}
-                    onRequestClose={() => this.toggleModel("addItem")}
+                    onDismiss={() => this._hideModel("addItem")}
+                    onRequestClose={() => this._hideModel("addItem")}
                     animationType={"fade"}
                 >
                     <View style={(styles.container, { paddingBottom: this.state.viewPadding })}>
@@ -224,7 +213,7 @@ class CreateListScreen extends Component {
                         <Button
                             style={{ backgroundColor: color.danger, width: 150 }}
                             color={color[4]}
-                            onPress={() => this.toggleModel("addItem")}
+                            onPress={() => this._hideModel("addItem")}
                         >
                             Cancel
                         </Button>
@@ -235,7 +224,7 @@ class CreateListScreen extends Component {
                             color={color[4]}
                             onPress={() => {
                                 this.addTask();
-                                this.toggleModel("addItem");
+                                this._hideModel("addItem");
                             }}
                         >
                             Add
@@ -247,8 +236,8 @@ class CreateListScreen extends Component {
                     visible={this.state.pushDatabaseModal}
                     transparent={false}
                     animationType={"fade"}
-                    onDismiss={() => this.toggleModel("pushDatabase")}
-                    onRequestClose={() => this.toggleModel("pushDatabase")}
+                    onDismiss={() => this._hideModel("pushDatabase")}
+                    onRequestClose={() => this._hideModel("pushDatabase")}
                 >
                     <View style={styles.container}>
                         <Text style={styles.listItem}>Enter name of you list</Text>
@@ -263,7 +252,7 @@ class CreateListScreen extends Component {
                         <Button
                             style={{ backgroundColor: color.danger, width: 150 }}
                             color={color[4]}
-                            onPress={() => this.toggleModel("pushDatabase")}
+                            onPress={() => this._hideModel("pushDatabase")}
                         >
                             Cancel
                         </Button>
@@ -274,7 +263,7 @@ class CreateListScreen extends Component {
                             color={color[4]}
                             onPress={() => {
                                 this.pushToDatabase();
-                                this.toggleModel("pushDatabase");
+                                this._hideModel("pushDatabase");
                             }}
                         >
                             Add
@@ -284,6 +273,16 @@ class CreateListScreen extends Component {
             </View>
         );
     }
+    _hideModel = (modal) => {
+        switch (modal) {
+            case "addItem":
+                this.setState({ addItemModal: false });
+            case "pushDatabase":
+                this.setState({ pushDatabaseModal: false });
+            default:
+                return;
+        }
+    };
 }
 const mapStateToProps = (state) => {
     return {

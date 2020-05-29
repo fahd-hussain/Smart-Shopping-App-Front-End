@@ -4,4 +4,4 @@ export { updateList } from "./list/listActions";
 export { getAllList } from "./allList/allListActions";
 export { updateCart, emptyCart } from "./cart/cartActions";
 export { fetchPromotions } from "./promotion/promoActions";
-export { getStore } from "./store/storeActions"
+export { getStore } from "./store/storeActions";

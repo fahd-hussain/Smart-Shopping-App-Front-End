@@ -15,6 +15,7 @@ import ListShowScreen from "../screens/appScreens/ListScreen/ListDetailScreen";
 import SideMenu from "../screens/appScreens/SideMenu";
 import CartScreen from "../screens/appScreens/CartScreen";
 import BarCodeScannerScreen from "../screens/appScreens/ScannerScreen";
+import MapScreen from '../screens/appScreens/MapScreen'
 
 const optionsTabs = {
     headerShown: false,
@@ -77,6 +78,17 @@ const BarcodeScannerStackNavigator = createStackNavigator(
         initialRouteName: "BarcodeScanner",
     },
 );
+const MapStackNavigator = createStackNavigator(
+    {
+        Map: {
+            screen: MapScreen,
+            navigationOptions: optionsTabs,
+        },
+    },
+    {
+        initialRouteName: "Map",
+    },
+);
 // Tab Navigator
 const AppTabNavigator = createBottomTabNavigator(
     {
@@ -101,6 +113,14 @@ const AppTabNavigator = createBottomTabNavigator(
                 tabBarIcon: () => <Icon type="FontAwesome" name="barcode" style={{ color: color[5] }} />,
             },
         },
+        MapTab: {
+            screen: MapStackNavigator,
+            navigationOptions: {
+                tabBarLabel: "Map",
+                tabBarIcon: () => <Icon type="FontAwesome" name="map" style={{ color: color[5] }} />,
+            },
+        },
+        
     },
     {
         initialRouteName: "HomeTab",
