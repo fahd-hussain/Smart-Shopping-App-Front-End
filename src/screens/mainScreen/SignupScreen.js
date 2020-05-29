@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, ImageBackground, KeyboardAvoidingView } from "react-native";
+import { View, ImageBackground, KeyboardAvoidingView, Modal } from "react-native";
 import { Button, Text, TextInput, RadioButton } from "react-native-paper";
 import { connect } from "react-redux";
 
@@ -21,11 +21,16 @@ export class SignupScreen extends Component {
             modalVisible: false,
         };
     }
-    sendCred = async () => {
+
+    _sendCred = async () => {
         const { username, password, firstname, lastname, gender } = this.state;
+        const { setToken } = this.props;
+        this.setState({ modalVisible: true });
         if (username && password) {
-            this.setState({ modalVisible: true });
-            await this.props.setToken(username, password, firstname, lastname, gender);
+            setToken(username, password, firstname, lastname, gender).then(() => {
+                this.setState({ modalVisible: false });
+                this._navigateTo("Application");
+            });
         }
         if (!username || !password) {
             Alert.alert("Login Failed", "Username and/or Password field should not be empty", [
@@ -36,6 +41,11 @@ export class SignupScreen extends Component {
             ]);
         }
     };
+
+    _navigateTo = (path) => {
+        this.props.navigation.navigate(path);
+    };
+
     render() {
         const { username, password, firstname, lastname, gender } = this.state;
         return (
@@ -112,7 +122,7 @@ export class SignupScreen extends Component {
                             <Button
                                 mode="contained"
                                 style={styles.TextInput}
-                                onPress={() => this.sendCred()}
+                                onPress={() => this._sendCred()}
                                 theme={{ colors: { primary: color[1] } }}
                             >
                                 SIGNUP
@@ -120,7 +130,7 @@ export class SignupScreen extends Component {
                             <Button
                                 mode="contained"
                                 style={styles.TextInput}
-                                onPress={() => this.props.navigation.navigate("Login")}
+                                onPress={() => this._navigateTo("Login")}
                                 theme={{ colors: { primary: color[3] } }}
                             >
                                 Login
@@ -128,8 +138,12 @@ export class SignupScreen extends Component {
                         </View>
                     </KeyboardAvoidingView>
                 </View>
-                <Modal animationType="slide" transparent={true} visible={this.state.modalVisible}>
-                    <LoadingScreen style={styles.modal} />
+                <Modal 
+                    animationType="fade" 
+                    transparent 
+                    visible={this.state.modalVisible}
+                >
+                    <LoadingScreen />
                 </Modal>
             </ImageBackground>
         );

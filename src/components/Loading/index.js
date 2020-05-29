@@ -14,7 +14,8 @@ import styles from "./styles";
 export class LoadingScreen extends Component {
   render() {
     return (
-      <View style={this.props.style ? this.props.style : styles.loadingView}>
+      // <View style={this.props.style ? this.props.style : styles.loadingView}>
+      <View style={styles.loadingView}>
         <ActivityIndicator size="large" color={color[3]} />
         <Text style={styles.loadingText}>Loading...... </Text>
       </View>

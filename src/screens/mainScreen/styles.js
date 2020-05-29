@@ -47,14 +47,14 @@ export default styles = StyleSheet.create({
     rowFlex: {
         flexDirection: "row",
     },
-    radioButton: { 
-      marginTop: 8, 
-      color: "black" ,
-      flexDirection: "row",
-      marginHorizontal: "5%",
+    radioButton: {
+        marginTop: 8,
+        color: "black",
+        flexDirection: "row",
+        marginHorizontal: "5%",
     },
     rowButtonFlex: {
-      flexDirection: "row-reverse",
-      justifyContent: "space-between",
-  },
+        flexDirection: "row-reverse",
+        justifyContent: "space-between",
+    },
 });

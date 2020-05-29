@@ -1,13 +1,14 @@
 import React, { Component } from "react";
-import { View, SafeAreaView, ScrollView, Dimensions, Share } from "react-native";
+import { View, SafeAreaView, ScrollView, Dimensions, Share, Button, Modal } from "react-native";
 import { Text, List, ListItem, Icon } from "native-base";
-import { Avatar, Modal } from "react-native-paper";
+import { Avatar } from "react-native-paper";
 import { connect } from "react-redux";
 
 // Local Imports
 import { removeToken, updateCart } from "../../../redux";
 import styles from "./styles";
-import { aboutUs } from './aboutUs'
+import { aboutUs } from "./accountSettings";
+import { TouchableOpacity } from "react-native-gesture-handler";
 // import { images } from "../../constants/images";
 
 const LINKS = [
@@ -38,7 +39,8 @@ class SideMenu extends Component {
         super(props);
         this.state = {
             error: "",
-            aboudUsModal:false
+            aboutUsModal: false,
+            DPModal: false,
         };
     }
 
@@ -51,9 +53,10 @@ class SideMenu extends Component {
         Share.share(
             {
                 title: "Smart Shopping App",
-                message: "Smart Shopping App, best app to save time during shopping.\n" 
-                + "Download Free from here: " 
-                + "<URL OF APP>",
+                message:
+                    "Smart Shopping App, best app to save time during shopping.\n" +
+                    "Download Free from here: " +
+                    "<URL OF APP>",
             },
             {
                 dialogTitle: "Smart Shopping App",
@@ -62,20 +65,27 @@ class SideMenu extends Component {
     };
 
     _about_us = () => {
-        this.setState({ aboudUsModal: true })
-    }
+        this.setState({ aboutUsModal: true });
+    };
 
     render() {
         const isAuth = this.props.user.user;
+        const { _id, username, profilePicture, firstname, lastname, gender } = this.props.user.user;
+        console.log(profilePicture);
         return (
             <SafeAreaView style={styles.container}>
-                <View
-                    style={styles.displayPictureContainer}
-                >
-                    <Avatar.Image
-                        size={(Dimensions.get("window").width * 1) / 2}
-                        // source={images.sampleProfilePicture}
-                    />
+                <View style={styles.displayPictureContainer}>
+                    <TouchableOpacity onPress={() => this.setState({ DPModal: true })}>
+                        {profilePicture ? (
+                            <Avatar.Image size={(Dimensions.get("window").width * 1) / 2} source={profilePicture} />
+                        ) : (
+                            <Avatar.Icon
+                                size={(Dimensions.get("window").width * 1) / 2}
+                                icon={() => <Icon type="FontAwesome" name="user" style={styles.avatar} size="600" />}
+                            />
+                        )}
+                    </TouchableOpacity>
+
                     {!isAuth ? null : (
                         <Text style={styles.displayPictureText} size="xl" bold>
                             Hi, {this.props.user.user.firstname} {this.props.user.user.lastname}
@@ -87,7 +97,7 @@ class SideMenu extends Component {
                         {LINKS.map((el) => (
                             <ListItem
                                 onPress={() => {
-                                    switch(el.link){
+                                    switch (el.link) {
                                         case "Share":
                                             this._share();
                                             return;
@@ -95,7 +105,7 @@ class SideMenu extends Component {
                                             this._about_us();
                                             return;
                                         default:
-                                            this.props.navigation.navigate(el.link)
+                                            this.props.navigation.navigate(el.link);
                                     }
                                 }}
                                 key={el.link}
@@ -112,6 +122,20 @@ class SideMenu extends Component {
                         <Text style={{ paddingLeft: 10 }}>LOGOUT</Text>
                     </ListItem>
                 </List>
+                <Modal
+                    visible={this.state.DPModal}
+                    onDismiss={() => this.setState({ DPModal: false })}
+                    onRequestClose={() => this.setState({ DPModal: false })}
+                    animationType="fade"
+                >
+                    <View style={styles.displayPictureModalContainer}>
+                        {profilePicture ? (
+                            <Image source={profilePicture} style={styles.displayPictureModal} />
+                        ) : (
+                            <Icon type="FontAwesome" name="user" style={styles.displayPictureModal} />
+                        )}
+                    </View>
+                </Modal>
             </SafeAreaView>
         );
     }
@@ -127,7 +151,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         removeToken: () => dispatch(removeToken()),
-        updateCart: () => dispatch(updateCart())
+        updateCart: () => dispatch(updateCart()),
     };
 };
 

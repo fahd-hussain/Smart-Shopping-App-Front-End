@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { View, ImageBackground, KeyboardAvoidingView, Alert } from "react-native";
-import { Button, Text, TextInput, Modal } from "react-native-paper";
+import { View, ImageBackground, KeyboardAvoidingView, Alert, Modal } from "react-native";
+import { Button, Text, TextInput } from "react-native-paper";
 import { connect } from "react-redux";
 
 // Local Imports
-import { getToken } from "../../redux";
+import { getToken, getUser } from "../../redux";
 import styles from "./styles";
 import LoadingScreen from "../../components/Loading";
 import color from "../../constants/color";
@@ -18,20 +18,26 @@ export class LoginScreen extends Component {
             modalVisible: false,
         };
     }
-
-    componentDidUpdate() {
-        if (this.props.token.token) {
-            this.props.navigation.navigate("Application");
-        }
-    }
+    
     sendCred = async () => {
         // const username = "fadi@gmail.com"
-        // const username = "ghazi@gmail.com"
-        // const password = "123456"
-        const { username, password } = this.state;
+        const username = "ghazi@gmail.com"
+        const password = "123456"
+        this.setState({ modalVisible: true });
+        // const { username, password } = this.state;
+        const { getToken, getUser } = this.props
         if (username && password) {
-            this.setState({ modalVisible: true });
-            await this.props.getToken(username, password);
+            getToken(username, password)
+            .then((res) => {
+                console.log(res[0])
+                getUser(res[0])
+                    .then(() => {
+                        this.setState({ modalVisible: false });
+                        this.navigateTo("Application");
+                    })
+                    .catch((error) => console.warn(error))
+            })
+            .catch(error => console.warn(error));
         }
         if (!username || !password) {
             Alert.alert("Login Failed", "Username and/or Password field should not be empty", [
@@ -40,12 +46,14 @@ export class LoginScreen extends Component {
                     style: "cancel",
                 },
             ]);
+            this.setState({ modalVisible: false });
         }
     };
 
-    navigate = () => {
-        this.props.navigation.navigate("Application");
+    navigateTo = ( path ) => {
+        this.props.navigation.navigate(path);
     };
+
     render() {
         return (
             <ImageBackground
@@ -82,14 +90,14 @@ export class LoginScreen extends Component {
                                 mode="contained"
                                 style={styles.TextInput}
                                 onPress={() => this.sendCred()}
-                                theme={{ colors: { primary: color[1] } }}
+                                theme={{ colors: { primary: color[1] }}}
                             >
                                 LOGIN
                             </Button>
                             <Button
                                 mode="contained"
                                 style={styles.TextInput}
-                                onPress={() => this.props.navigation.navigate("Register")}
+                                onPress={() => this.navigateTo("Signup")}
                                 theme={{ colors: { primary: color[3] } }}
                             >
                                 SIGNUP
@@ -97,24 +105,23 @@ export class LoginScreen extends Component {
                         </View>
                     </KeyboardAvoidingView>
                 </View>
-                <Modal animationType="slide" transparent={true} visible={this.state.modalVisible}>
-                    <LoadingScreen style={styles.modal} />
+                <Modal 
+                    animationType="fade" 
+                    // transparent 
+                    visible={this.state.modalVisible}
+                >
+                    <LoadingScreen />
                 </Modal>
             </ImageBackground>
         );
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        token: state.token,
-    };
-};
-
 const mapDispatchToProps = (dispatch) => {
     return {
         getToken: (username, password) => dispatch(getToken(username, password)),
+        getUser: (token) => dispatch(getUser(token))
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);
+export default connect(null, mapDispatchToProps)(LoginScreen);

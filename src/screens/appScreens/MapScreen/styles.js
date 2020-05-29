@@ -9,6 +9,8 @@ import color from "../../../constants/color";
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
     },
     mapScreen: {
         marginLeft: 5,
@@ -30,6 +32,6 @@ export const styles = StyleSheet.create({
         position: "absolute",
         width: 100 * 2,
         height: 100,
-        backgroundColor: 'red'
-    }
+        backgroundColor: "red",
+    },
 });

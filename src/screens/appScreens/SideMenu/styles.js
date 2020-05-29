@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 
 import color from "../../../constants/color";
 
@@ -15,4 +15,21 @@ export default styles = StyleSheet.create({
     displayPictureText: { 
         paddingTop: 10 
     },
+    avatar: {
+        fontSize: ((Dimensions.get("window").width * 1) / 2) - 10,
+        marginBottom: "5%",
+        color: color[5]
+    },
+    displayPictureModalContainer: {
+        flex: 1, 
+        justifyContent: "center",
+        alignItems: "center", 
+        marginLeft: "30%"
+    },
+    displayPictureModal: {
+        width: Dimensions.get("window").width * 1,
+        height: Dimensions.get("window").width * 1,
+        fontSize: Dimensions.get("window").width,
+        color: color[5]
+    }
 });
