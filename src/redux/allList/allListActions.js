@@ -31,8 +31,12 @@ export const getAllList = (token) => (dispatch) => {
         }
     })
     .then(res => {
-        const allList = res.data
-        // console.log(res.data)
+        const allList = []
+        res.data.map( item => {
+            allList.push({ _id: item._id, listItems: item.listItems, name: item.name })
+        });
+        // console.log(allList)
+        // console.log({ _id, listItems, name })
         dispatch(all_list_success(allList))
     })
     .catch(error => {

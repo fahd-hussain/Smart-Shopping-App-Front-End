@@ -3,7 +3,8 @@ import { Text, View, FlatList, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
 import { Card, Icon, Right } from "native-base";
 import { Button } from "react-native-paper";
-import GestureRecognizer, { swipeDirections } from "react-native-swipe-gestures";
+import { withNavigationFocus } from 'react-navigation';
+import GestureRecognizer from "react-native-swipe-gestures";
 
 // Local Imports
 import styles from "./styles";
@@ -14,22 +15,19 @@ class ListScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            allList: this.props.allList.allList,
             config: {
                 velocityThreshold: 0.3,
                 directionalOffsetThreshold: 80,
             },
         };
     }
-    componentDidMount = () => {
-        this.props.getAllList(this.props.token.token);
-    };
-    componentDidUpdate = () => {
-        this.props.getAllList(this.props.token.token);
-    };
+    componentDidUpdate(prevProps) {
+        if (prevProps.isFocused !== this.props.isFocused) {
+            this.props.getAllList(this.props.token.token)
+        }
+    }
 
     render() {
-        // console.log(this.state.allList);
         const list = this.props.allList.allList;
         return (
             <GestureRecognizer
@@ -44,15 +42,11 @@ class ListScreen extends Component {
                     data={list}
                     keyExtractor={(item) => item._id}
                     renderItem={({ item, index }) => (
-                        <TouchableOpacity 
-                            onPress={() => this.navigateToShowList(item)}
-                            // onLongPress={() =>}    
-                        >
+                        <TouchableOpacity onPress={() => this.navigateToShowList(item)}>
                             <Card style={{ paddingHorizontal: 10 }}>
                                 <View style={styles.listItemCont}>
                                     <Text style={styles.listItem}>{item.name}</Text>
                                 </View>
-                                {/* <View style={styles.hr} /> */}
                             </Card>
                         </TouchableOpacity>
                     )}
@@ -76,7 +70,6 @@ class ListScreen extends Component {
         );
     }
     navigateToShowList = (item) => {
-        // console.log(item)
         this.props.navigation.navigate("ListShow", item);
     };
     onSwipeLeft = () => {
@@ -103,4 +96,4 @@ const mapDispatchToProps = (dispatch) => {
         getAllList: (token) => dispatch(getAllList(token)),
     };
 };
-export default connect(mapStateToProps, mapDispatchToProps)(ListScreen);
+export default withNavigationFocus(connect(mapStateToProps, mapDispatchToProps)(ListScreen));

@@ -37,6 +37,10 @@ class BarCodeScannerScreen extends Component {
         this.props.navigation.navigate("List");
     };
 
+    onSwipeLeft = () => {
+        this.props.navigation.navigate("Map");
+    };
+
     render() {
         const { hasCameraPermission, scanned } = this.state;
         // console.log(this.state.Cart)
@@ -56,7 +60,7 @@ class BarCodeScannerScreen extends Component {
         }
         return (
             <GestureRecognizer
-                // onSwipeLeft={this.onSwipeLeft}
+                onSwipeLeft={this.onSwipeLeft}
                 onSwipeRight={this.onSwipeRight}
                 config={this.state.config}
                 style={styles.container}

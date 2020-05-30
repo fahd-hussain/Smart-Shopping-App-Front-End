@@ -28,7 +28,7 @@ const LINKS = [
         iconName: "info-circle",
     },
     {
-        link: "Settings",
+        link: "Profile",
         title: "Accounts settings",
         iconName: "cog",
     },
@@ -81,14 +81,14 @@ class SideMenu extends Component {
                         ) : (
                             <Avatar.Icon
                                 size={(Dimensions.get("window").width * 1) / 2}
-                                icon={() => <Icon type="FontAwesome" name="user" style={styles.avatar} size="600" />}
+                                icon={() => <Icon type="FontAwesome" name="user" style={styles.avatar} />}
                             />
                         )}
                     </TouchableOpacity>
 
                     {!isAuth ? null : (
                         <Text style={styles.displayPictureText} size="xl" bold>
-                            Hi, {this.props.user.user.firstname} {this.props.user.user.lastname}
+                            Hi, {firstname} {lastname}
                         </Text>
                     )}
                 </View>
@@ -105,6 +105,7 @@ class SideMenu extends Component {
                                             this._about_us();
                                             return;
                                         default:
+                                            console.log(el.link)
                                             this.props.navigation.navigate(el.link);
                                     }
                                 }}

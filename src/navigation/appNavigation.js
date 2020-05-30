@@ -15,7 +15,8 @@ import ListShowScreen from "../screens/appScreens/ListScreen/ListDetailScreen";
 import SideMenu from "../screens/appScreens/SideMenu";
 import CartScreen from "../screens/appScreens/CartScreen";
 import BarCodeScannerScreen from "../screens/appScreens/ScannerScreen";
-import MapScreen from '../screens/appScreens/MapScreen'
+import MapScreen from '../screens/appScreens/MapScreen';
+import ProfileScreen from '../screens/appScreens/ProfileScreen'
 
 const optionsTabs = {
     headerShown: false,
@@ -82,11 +83,24 @@ const MapStackNavigator = createStackNavigator(
     {
         Map: {
             screen: MapScreen,
-            navigationOptions: optionsTabs,
+            navigationOptions: ({ navigation }) => ({
+                headerRight: () => headerRight(navigation),
+            }),
         },
     },
     {
         initialRouteName: "Map",
+    },
+);
+const ProfileStackNavigator = createStackNavigator(
+    {
+        Profile: {
+            screen: ProfileScreen,
+            navigationOptions: optionsTabs,
+        },
+    },
+    {
+        initialRouteName: "Profile",
     },
 );
 // Tab Navigator
@@ -144,6 +158,10 @@ const MainStackNavigator = createStackNavigator(
             screen: CartScreen,
             navigationOptions: options,
         },
+        Profile: {
+            screen: ProfileStackNavigator,
+            navigationOptions: options
+        }
     },
     {
         initialRouteName: "Home",

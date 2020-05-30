@@ -3,13 +3,13 @@ import { View, Text, ScrollView, Dimensions, Modal, TouchableOpacity, Image } fr
 import { Button } from "react-native-paper";
 import ImageViewer from "react-native-image-zoom-viewer";
 import { connect } from "react-redux";
-import axios from "axios";
-import * as FileSystem from "expo-file-system";
+import GestureRecognizer, { swipeDirections } from "react-native-swipe-gestures";
 
 // local imports
 import { styles } from "./styles";
 import color from "../../../constants/color";
 import baseUrl from "../../../constants/baseUrl";
+import LoadingScreen from '../../../components/Loading'
 
 const { width } = Dimensions.get("window");
 
@@ -17,59 +17,67 @@ export class MapScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            imageId: this.props.navigation.state.params.listId,
             imagePreview: false,
-            image: FileSystem.documentDirectory + "map.png"
+            config: {
+                velocityThreshold: 0.3,
+                directionalOffsetThreshold: 80,
+            },
         };
     }
 
-    _getImage = () => {
-        const { listId } = this.props.navigation.state.params;
-        console.log(listId);
-        this.setState({ imageId: listId });
-    };
-
-    _downImage = async () => {
-        console.log("Here");
-        // const { uri: localUri } =  
-        FileSystem.downloadAsync(
-            // `${baseUrl}shortestPath/${this.state.imageId}`,
-            "https://metoo-assets.s3.amazonaws.com/static/media/avatars/3/photo_6B7NH7L.jpg",
-            FileSystem.documentDirectory + "map.jpg",
-            // "./map.png"
-        ).then(({ uri }) => {
-            this.setState({ image: uri })
-            console.log('Finished downloading to ', uri);
-        });
-    };
-
     render() {
-        console.log(this.state.image)
-        console.log(`${baseUrl}shortestPath/${this.state.imageId}`)
-        return (
-            <View style={[styles.container, {backgroundColor: "black"}]}>
-                <TouchableOpacity onPress={() => this.setState({ imagePreview: true })}>
-                    <Image
-                        source={{
-                            uri: `${baseUrl}shortestPath/${this.state.imageId}`,
-                        }}
-                        // source={this.state.image}
-                        style={{ width: width, height: 300 }}
-                    />
-                </TouchableOpacity>
+        const listId = this.props.navigation.state.params;
 
-                <Button onPress={() => this._downImage()}>Hello Jee</Button>
-                <Modal visible={this.state.imagePreview} transparent>
-                    <ImageViewer
-                        imageUrls={[{ url: `${baseUrl}shortestPath/${this.state.imageId}` }]}
-                        onCancel={() => this.setState({ imagePreview: false })}
-                        onSwipeDown={() => this.setState({ imagePreview: false })}
-                        enableSwipeDown
-                    />
-                </Modal>
-            </View>
-        );
+        if (!listId) {
+            return (
+                <GestureRecognizer
+                    onSwipeRight={this.onSwipeRight}
+                    config={this.state.config}
+                    style={[styles.container, { paddingBottom: this.state.viewPadding }]}
+                >
+                    <View>
+                        <Text>Oops, nothings to show!</Text>
+                        <Text>Got to list tab to find the map.</Text>
+                    </View>
+                </GestureRecognizer>
+            );
+        } else {
+            const { listId } = this.props.navigation.state.params;
+            const url = `${baseUrl}shortestPath/${listId}`;
+            console.log(url)
+            return (
+                <GestureRecognizer
+                    onSwipeRight={this.onSwipeRight}
+                    config={this.state.config}
+                    style={[styles.container, { paddingBottom: this.state.viewPadding }]}
+                >
+                    <View style={[styles.container, { backgroundColor: "black" }]}>
+                        <TouchableOpacity onPress={() => this.setState({ imagePreview: true })}>
+                            <Image
+                                source={{
+                                    uri: url,
+                                }}
+                                style={{ width: width, height: 300 }}
+                            />
+                        </TouchableOpacity>
+
+                        <Modal visible={this.state.imagePreview} transparent>
+                            <ImageViewer
+                                imageUrls={[{ url: url }]}
+                                onCancel={() => this.setState({ imagePreview: false })}
+                                onSwipeDown={() => this.setState({ imagePreview: false })}
+                                enableSwipeDown
+                                loadingRender={() => {return (<LoadingScreen />)}}
+                            />
+                        </Modal>
+                    </View>
+                </GestureRecognizer>
+            );
+        }
     }
+    onSwipeRight = () => {
+        this.props.navigation.navigate("BarcodeScanner");
+    };
 }
 
 // const mapStateToProps = (state) => {
