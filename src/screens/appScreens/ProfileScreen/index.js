@@ -18,7 +18,6 @@ class ProfileScreen extends Component {
         this.props.navigation.navigate("Authentication");
     };
     render() {
-        const isAuth = this.props.user.user;
         const { _id, username, profilePicture, firstname, lastname, gender } = this.props.user.user;
         return (
             <View style={styles.container}>

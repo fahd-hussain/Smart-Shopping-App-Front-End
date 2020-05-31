@@ -28,7 +28,7 @@ export default ConfigureStore = () => {
             allList: allListReducer,
             cart: cartReducer,
             promo: promoReducer,
-            store: storeReducer,
+            store: storeReducer
         }),
         applyMiddleware(
             thunk,

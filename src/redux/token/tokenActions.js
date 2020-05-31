@@ -100,7 +100,7 @@ export const removeToken = () => (dispatch) => {
                 "Content-Type": "application/json",
             },
         })
-            .then((res) => {
+            .then(() => {
                 dispatch(tokenSuccess(null));
                 resolve("done")
             })

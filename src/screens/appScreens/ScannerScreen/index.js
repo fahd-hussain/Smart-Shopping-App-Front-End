@@ -18,6 +18,7 @@ class BarCodeScannerScreen extends Component {
         scanned: false,
         barcode: "",
         Cart: this.props.cart.cart,
+        quantity: 1,
         config: {
             velocityThreshold: 0.3,
             directionalOffsetThreshold: 80,
@@ -97,19 +98,20 @@ class BarCodeScannerScreen extends Component {
 
     fetchData = () => {
         const notEmpty = this.state.barcode.trim().length > 0;
-        
+        const { token } = this.props.token;
+        console.log(token)
         if (notEmpty){
             const barcode = this.state.barcode;
-
-            axios(baseUrl + "store/" + barcode, {
+            const url = `${baseUrl}store/${barcode}`
+            axios(url, {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": this.props.token.token
+                    "Authorization": token
                 },
             })
             .then( res => {
-                // console.log(res.data)
+                console.log(res.data)
                 this.addToCart(res.data)
             })
             .catch( error => {
@@ -122,8 +124,9 @@ class BarCodeScannerScreen extends Component {
         const notEmpty = data.length > 0;
         // console.log(data)
         if (notEmpty) {
-            const { name, barcode, _id, price, quantity, quantityType } = data[0]
-            // console.log(name, barcode, _id, price, quantity, quantityType)
+            const { name, barcode, _id, price } = data[0]
+            const { quantity } = this.state
+            console.log(name, barcode, _id, price, quantity )
             this.setState(
                 (prevState) => {
                     let { Cart } = prevState;
@@ -133,8 +136,8 @@ class BarCodeScannerScreen extends Component {
                             name: name, 
                             barcode: barcode, 
                             price: price, 
-                            quantity: quantity, 
-                            quantityType: quantityType
+                            quantity: quantity,
+                            totalPrice: price
                         }),
                         barcode: "",
                     };

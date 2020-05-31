@@ -35,7 +35,7 @@ class CreateListScreen extends Component {
                         }),
                         itemName: "",
                         quantity: 1,
-                        data: []
+                        data: [],
                     };
                 },
                 () => this.props.updateList(this.state.listItems),
@@ -86,8 +86,6 @@ class CreateListScreen extends Component {
     pushToDatabase = () => {
         const { name, listItems } = this.state;
         const userToken = this.props.token.token;
-        console.log(JSON.stringify({ name, listItems }));
-        console.log(`${baseUrl}lists`);
         axios(`${baseUrl}lists`, {
             method: "POST",
             headers: {
@@ -103,7 +101,7 @@ class CreateListScreen extends Component {
                 console.log("error", error);
             });
         this.resetList();
-        this.props.navigation.navigate("List")
+        this.props.navigation.navigate("List");
     };
 
     componentDidMount = () => {
@@ -246,6 +244,8 @@ class CreateListScreen extends Component {
                             onChangeText={(name) => this.setState({ name })}
                             value={this.state.name}
                             placeholder="List Name"
+                            returnKeyType="done"
+                            returnKeyLabel="done"
                         />
                     </View>
                     <View style={styles.modalButtonsLeft}>

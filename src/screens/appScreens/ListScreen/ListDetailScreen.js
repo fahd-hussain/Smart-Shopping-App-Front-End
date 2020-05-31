@@ -47,7 +47,7 @@ class ListShowScreen extends Component {
                         </View>
                     }
                 />
-                <Button onPress={this._findTheWay} >Find they WAY!</Button>
+                <Button onPress={this._findTheWay} style={{}}>Find they WAY!</Button>
             </View>
         );
     }

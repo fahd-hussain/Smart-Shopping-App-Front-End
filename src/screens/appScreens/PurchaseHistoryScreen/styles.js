@@ -36,22 +36,29 @@ export default styles = StyleSheet.create({
     },
     textInput: {
         height: 40,
-        paddingRight: 10,
-        paddingLeft: 10,
-        borderColor: "gray",
+        paddingHorizontal: "3%",
+        marginVertical: "3%",
+        borderColor: "black",
         borderWidth: isAndroid ? 0 : 1,
-        width: "100%",
+        width: "90%",
+        fontSize: 24,
     },
     hideInput: {
         height: 50,
-        width: "30%",
-        paddingHorizontal: "5%",
+        width: "100%",
+        paddingHorizontal: "10%",
         borderColor: "gray",
         borderWidth: isAndroid ? 0 : 1,
+        fontSize: 24,
+        textAlign: 'center',
     },
-    createListCon: {
-        flexDirection: "row",
-        flexWrap: "wrap",
+    rowDir: {
+        justifyContent: "space-between",
+    },
+    emptyScreen: {
+        justifyContent: "center",
+        alignItems: "center",
+        flex: 1,
     },
     modalScreen: {
         flex: 1,

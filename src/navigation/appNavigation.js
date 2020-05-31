@@ -16,7 +16,9 @@ import SideMenu from "../screens/appScreens/SideMenu";
 import CartScreen from "../screens/appScreens/CartScreen";
 import BarCodeScannerScreen from "../screens/appScreens/ScannerScreen";
 import MapScreen from '../screens/appScreens/MapScreen';
-import ProfileScreen from '../screens/appScreens/ProfileScreen'
+import ProfileScreen from '../screens/appScreens/ProfileScreen';
+import PurchaseHistoryScreen from '../screens/appScreens/PurchaseHistoryScreen';
+import PurchaseHistoryDetailScreen from '../screens/appScreens/PurchaseHistoryScreen/PurchaseHistoryDetailScreen'
 
 const optionsTabs = {
     headerShown: false,
@@ -25,11 +27,8 @@ const options = {
     headerTitle: "",
 };
 const headerRight = (navigation) => {
-    // console.log(navigation)
     return (
-        <TouchableOpacity style={{ paddingRight: 15 }} onPress={() => navigation.navigate("Cart")}>
-            <Icon type="FontAwesome" name="shopping-cart" />
-        </TouchableOpacity>
+            <Icon style={{ paddingRight: 15 }} type="FontAwesome" name="shopping-cart" onPress={() => navigation.navigate("Cart")}/>
     );
 };
 
@@ -57,11 +56,15 @@ const ListStackNavigator = createStackNavigator(
         },
         CreateList: {
             screen: CreateListScreen,
-            navigationOptions: options,
+            navigationOptions: {
+                headerTitle: "Create List"
+            },
         },
         ListShow: {
             screen: ListShowScreen,
-            navigationOptions: options,
+            navigationOptions: {
+                headerTitle: "List Details"
+            },
         },
     },
     {
@@ -72,7 +75,9 @@ const BarcodeScannerStackNavigator = createStackNavigator(
     {
         BarcodeScanner: {
             screen: BarCodeScannerScreen,
-            navigationOptions: optionsTabs,
+            navigationOptions: ({ navigation }) => ({
+                headerRight: () => headerRight(navigation),
+            }),
         },
     },
     {
@@ -103,6 +108,26 @@ const ProfileStackNavigator = createStackNavigator(
         initialRouteName: "Profile",
     },
 );
+const PurchaseHistoryStackNavigator = createStackNavigator(
+    {
+        PurchaseHistory: {
+            screen: PurchaseHistoryScreen,
+            navigationOptions: ({ navigation }) => ({
+                headerRight: () => <Icon style={{ paddingRight: 15 }} type="FontAwesome" name="home" onPress={() => navigation.navigate("Home")}/>
+            }),
+        },
+        PurchaseHistoryDetail: {
+            screen: PurchaseHistoryDetailScreen,
+            navigationOptions: {
+                headerTitle: "Purchase History Details"
+            },
+        },
+    },
+    {
+        initialRouteName: "PurchaseHistory",
+    },
+);
+
 // Tab Navigator
 const AppTabNavigator = createBottomTabNavigator(
     {
@@ -156,11 +181,20 @@ const MainStackNavigator = createStackNavigator(
         },
         Cart: {
             screen: CartScreen,
-            navigationOptions: options,
+            navigationOptions: {
+                headerTitle: "Cart"
+            },
         },
         Profile: {
             screen: ProfileStackNavigator,
-            navigationOptions: options
+            navigationOptions: {
+                headerTitle: "Profile"
+            }
+        },
+        PurchaseHistory: {
+            screen: PurchaseHistoryStackNavigator,
+            navigationOptions: optionsTabs,
+
         }
     },
     {

@@ -13,6 +13,11 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 const LINKS = [
     {
+        link: "PurchaseHistory",
+        title: "Purchase History",
+        iconName: "history",
+    },
+    {
         link: "Share",
         title: "Invite friends",
         iconName: "share",
@@ -32,6 +37,7 @@ const LINKS = [
         title: "Accounts settings",
         iconName: "cog",
     },
+    
 ];
 
 class SideMenu extends Component {
@@ -71,7 +77,6 @@ class SideMenu extends Component {
     render() {
         const isAuth = this.props.user.user;
         const { _id, username, profilePicture, firstname, lastname, gender } = this.props.user.user;
-        console.log(profilePicture);
         return (
             <SafeAreaView style={styles.container}>
                 <View style={styles.displayPictureContainer}>
