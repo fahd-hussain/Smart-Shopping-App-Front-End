@@ -8,7 +8,6 @@ import { persistStore, persistCombineReducers } from "redux-persist";
 import { userReducer } from "./user/userReducer";
 import { tokenReducer } from "./token/tokenReducer";
 import { listReducer } from "./list/listReducer";
-import { allListReducer } from "./allList/allListReducer";
 import { cartReducer } from "./cart/cartReducer";
 import { promoReducer } from "./promotion/promoReducer";
 import { storeReducer } from "./store/storeReducer";
@@ -25,10 +24,9 @@ export default ConfigureStore = () => {
             user: userReducer,
             token: tokenReducer,
             list: listReducer,
-            allList: allListReducer,
             cart: cartReducer,
             promo: promoReducer,
-            store: storeReducer
+            store: storeReducer,
         }),
         applyMiddleware(
             thunk,

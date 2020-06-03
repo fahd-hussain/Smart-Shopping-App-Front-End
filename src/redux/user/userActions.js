@@ -1,34 +1,39 @@
+// Libraries
 import axios from "axios";
+
+// Local Imports
 import baseUrl from "../../constants/baseUrl";
 
-const getUserRequest = () => {
+// Global Variables
+const url = `${baseUrl}users`
+const fetchUserRequest = () => {
     return {
         type: "GET_USER_REQUEST",
     };
 };
 
-export const getUserSuccess = (user) => {
+const fetchUserSuccess = (user) => {
     return {
         type: "GET_USER_SUCCESS",
         payload: user,
     };
 };
 
-const getUserFailure = (error) => {
+const fetchUserFailure = (error) => {
     return {
         type: "GET_USER_FAILURE",
         payload: error,
     };
 };
 
-export const getUser = (token) => (dispatch) => {
-    dispatch(getUserRequest());
+export const fetchUser = (token) => (dispatch) => {
+    dispatch(fetchUserRequest());
 
     const promiseArray = [];
 
     promiseArray.push(
         new Promise((resolve, reject) => {
-            axios(baseUrl + "users/profile", {
+            axios(`${url}/profile`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -38,12 +43,11 @@ export const getUser = (token) => (dispatch) => {
                 .then((res) => {
                     const { _id, username, profilePicture, firstname, lastname, gender } = res.data.user
                     const user = {_id, username, profilePicture, firstname, lastname, gender}
-                    // console.log(user)
-                    dispatch(getUserSuccess(user));
+                    dispatch(fetchUserSuccess(user));
                     resolve(user)
                 })
                 .catch((error) => {
-                    dispatch(getUserFailure(error));
+                    dispatch(fetchUserFailure(error));
                     reject(error)
                 });
         }),

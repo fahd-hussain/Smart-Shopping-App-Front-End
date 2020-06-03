@@ -5,10 +5,11 @@ import { Card, Left, Right, Fab } from "native-base";
 import { Button } from "react-native-paper";
 import axios from "axios";
 // local imports
-import { updateList, getStore } from "../../../redux";
+import { updateList, fetchStore, fetchLists } from "../../../redux";
 import styles from "./styles";
 import baseUrl from "../../../constants/baseUrl";
 import color from "../../../constants/color";
+import LoadingScreen from '../../../components/Loading'
 
 class CreateListScreen extends Component {
     state = {
@@ -19,6 +20,7 @@ class CreateListScreen extends Component {
         pushDatabaseModal: false,
         store: this.props.store.store,
         data: [],
+        isLoading: false
     };
 
     addTask = () => {
@@ -86,6 +88,10 @@ class CreateListScreen extends Component {
     pushToDatabase = () => {
         const { name, listItems } = this.state;
         const userToken = this.props.token.token;
+        const { fetchLists } = this.props
+
+        this.setState({ isLoading: true })
+
         axios(`${baseUrl}lists`, {
             method: "POST",
             headers: {
@@ -95,17 +101,19 @@ class CreateListScreen extends Component {
             data: JSON.stringify({ name, listItems }),
         })
             .then((res) => {
-                console.log("Pushed");
+                fetchLists(userToken);
+                this.props.navigation.navigate("List");
+                this.setState({ isLoading: false })
             })
             .catch((error) => {
                 console.log("error", error);
+                this.setState({ isLoading: false })
             });
         this.resetList();
-        this.props.navigation.navigate("List");
     };
 
     componentDidMount = () => {
-        this.props.getStore();
+        this.props.fetchStore();
     };
 
     searchFilterFunction = (text) => {
@@ -127,8 +135,14 @@ class CreateListScreen extends Component {
 
     render() {
         const list = this.state.listItems;
+        const { isLoading } = this.state;
+
+        if (isLoading){
+            return <LoadingScreen />
+        }
+
         return (
-            <View style={[styles.container, { paddingBottom: this.state.viewPadding }]}>
+            <View style={[styles.container, { paddingBottom: 10 }]}>
                 <FlatList
                     style={styles.list}
                     data={list}
@@ -140,7 +154,6 @@ class CreateListScreen extends Component {
                                     <Text style={styles.listItem}>{item.itemName}</Text>
                                     <Text>{item.quantity}</Text>
                                 </View>
-                                {/* <View style={styles.hr} /> */}
                             </Card>
                         </TouchableOpacity>
                     )}
@@ -177,7 +190,7 @@ class CreateListScreen extends Component {
                     onRequestClose={() => this._hideModel("addItem")}
                     animationType={"fade"}
                 >
-                    <View style={(styles.container, { paddingBottom: this.state.viewPadding })}>
+                    <View style={(styles.container, { paddingBottom: 10 })}>
                         <TextInput
                             style={styles.textInput}
                             onChangeText={(text) => this.searchFilterFunction(text)}
@@ -294,7 +307,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         updateList: (data) => dispatch(updateList(data)),
-        getStore: () => dispatch(getStore()),
+        fetchStore: () => dispatch(fetchStore()),
+        fetchLists: (token) => dispatch(fetchLists(token))
     };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(CreateListScreen);

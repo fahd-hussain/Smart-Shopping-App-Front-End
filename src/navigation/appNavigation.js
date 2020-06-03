@@ -18,7 +18,8 @@ import BarCodeScannerScreen from "../screens/appScreens/ScannerScreen";
 import MapScreen from '../screens/appScreens/MapScreen';
 import ProfileScreen from '../screens/appScreens/ProfileScreen';
 import PurchaseHistoryScreen from '../screens/appScreens/PurchaseHistoryScreen';
-import PurchaseHistoryDetailScreen from '../screens/appScreens/PurchaseHistoryScreen/PurchaseHistoryDetailScreen'
+import PurchaseHistoryDetailScreen from '../screens/appScreens/PurchaseHistoryScreen/PurchaseHistoryDetailScreen';
+import ComparePurchaseHistoryScreen from '../screens/appScreens/PurchaseHistoryScreen/ComparePurchaseHistory'
 
 const optionsTabs = {
     headerShown: false,
@@ -120,6 +121,12 @@ const PurchaseHistoryStackNavigator = createStackNavigator(
             screen: PurchaseHistoryDetailScreen,
             navigationOptions: {
                 headerTitle: "Purchase History Details"
+            },
+        },
+        ComparePurchaseHistory: {
+            screen: ComparePurchaseHistoryScreen,
+            navigationOptions: {
+                headerTitle: "Compare Purchase History"
             },
         },
     },

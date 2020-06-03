@@ -1,42 +1,56 @@
+// Libraries
 import axios from "axios";
+
+// Local Imports
 import baseUrl from "../../constants/baseUrl";
 
-const storeRequest = () => {
+// Global Variables
+const url = `${baseUrl}store`
+
+const fetchStoreRequest = () => {
     return {
         type: "STORE_REQUEST",
     };
 };
 
-const storeSuccess = (store) => {
+const fetchStoreSuccess = (store) => {
     return {
         type: "STORE_SUCCESS",
         payload: store,
     };
 };
 
-const storeFailure = (error) => {
+const fetchStoreFailure = (error) => {
     return {
         type: "STORE_FAILURE",
         payload: error,
     };
 };
 
-export const getStore = () => (dispatch) => {
-    dispatch(storeRequest());
-    return axios(baseUrl + "store", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-        .then((res) => {
-            // console.log(res.data);
-            const store = [];
-            res.data.map(ele => store.push({ name: ele.name, _id: ele._id}))
-            // console.log(store)
-              dispatch(storeSuccess(store));
+export const fetchStore = () => (dispatch) => {
+    dispatch(fetchStoreRequest());
+    
+    const promiseArray = [];
+
+    promiseArray.push(
+        new Promise((resolve, reject) => {
+            axios(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((res) => {
+                    const store = [];
+                    res.data.map((element) => store.push({ name: element.name, _id: element._id }));
+                    dispatch(fetchStoreSuccess(store));
+                    resolve(store)
+                })
+                .catch((error) => {
+                    dispatch(fetchStoreFailure(error));
+                    reject(error)
+                });
         })
-        .catch((error) => {
-            dispatch(storeFailure(error));
-        });
+    )
+    return 
 };

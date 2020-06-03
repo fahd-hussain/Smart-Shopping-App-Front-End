@@ -1,7 +1,9 @@
-export { getUser } from "./user/userActions";
+export { fetchUser } from "./user/userActions";
 export { getToken, setToken, removeToken } from "./token/tokenActions";
-export { updateList } from "./list/listActions";
-export { getAllList } from "./allList/allListActions";
-export { updateCart, fetchCart } from "./cart/cartActions";
+export { fetchLists, updateList } from "./list/listActions";
+export { fetchCart, updateCart } from "./cart/cartActions";
 export { fetchPromotions } from "./promotion/promoActions";
-export { getStore } from "./store/storeActions"
+export { fetchStore } from "./store/storeActions";
+
+// export { getAllList } from "./allList/allListActions";
+// export { postFavorite, deleteFavorite, fetchFavorites } from "./favorite/favoriteActions";

@@ -52,6 +52,10 @@ export default styles = StyleSheet.create({
         fontSize: 24,
         textAlign: 'center',
     },
+    TextInput: {
+        marginHorizontal: "5%",
+        marginTop: 18,
+    },
     rowDir: {
         justifyContent: "space-between",
     },
@@ -70,4 +74,7 @@ export default styles = StyleSheet.create({
         bottom: 20,
         left: 20,
     },
+    btn1: {
+        backgroundColor: color[3]
+    }
 });

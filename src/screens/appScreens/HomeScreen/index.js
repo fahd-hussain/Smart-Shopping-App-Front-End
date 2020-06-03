@@ -1,12 +1,14 @@
 import React, { Component } from "react";
-import { Text, View, Pan } from "react-native";
+import { Text, View, AsyncStorage } from "react-native";
 import { connect } from "react-redux";
 import { Card, CardItem, Right, Icon } from "native-base";
-import GestureRecognizer, { swipeDirections } from "react-native-swipe-gestures";
+import { Button } from "react-native-paper";
+import GestureRecognizer from "react-native-swipe-gestures";
 
 // Local Imports
 import styles from "./styles";
-import { getAllList, fetchPromotions } from "../../../redux";
+import { fetchPromotions, fetchCart } from "../../../redux";
+import LoadingScreen from "../../../components/Loading";
 
 export class HomeScreen extends Component {
     constructor(props) {
@@ -16,19 +18,34 @@ export class HomeScreen extends Component {
                 velocityThreshold: 0.3,
                 directionalOffsetThreshold: 80,
             },
+            isLoading: false
         };
     }
+
     componentDidMount = () => {
-        this.props.getAllList(this.props.token.token);
-        this.props.fetchPromotions();
+        this.props.fetchCart(this.props.token.token)
+    }
+    _fetchPromotions = () => {
+        this.setState({ isLoading: true })
+        this.props
+            .fetchPromotions()
+            .then((res) => this.setState({ isLoading: false }))
+            .catch((error) => this.setState({ isLoading: false }));
     };
-    
+
     render() {
         const promo = this.props.promo.promotions;
+        const { isLoading } = this.state
+        
+        if ( isLoading ){
+            return <LoadingScreen />
+        }
+
         return (
             <GestureRecognizer
-                onSwipeLeft={this.onSwipeLeft}
-                onSwipeRight={this.onSwipeRight}
+                onSwipeLeft={this._onSwipeLeft}
+                onSwipeRight={this._onSwipeRight}
+                onSwipeDown={this._onSwipeDown}
                 config={this.state.config}
                 style={styles.container}
             >
@@ -46,15 +63,19 @@ export class HomeScreen extends Component {
                                 </CardItem>
                                 <CardItem footer>
                                     <Right>
-                                        <Icon
+                                        {/* <Icon
                                             raised
                                             reverse
-                                            // name={ props.favorite ? 'heart' : 'heart-o'}
-                                            name="heart"
+                                            name={this._isFavorite(item._id) ? "heart" : "heart-o"}
+                                            // name="heart"
                                             type="FontAwesome"
                                             color="#f50"
-                                            // onPress={() => props.favorite ? console.log("already fav") : props.onPress() }
-                                        />
+                                            onPress={() =>
+                                                this._isFavorite(item._id)
+                                                    ? this._favoriteButtonAction(item, "delete")
+                                                    : this._favoriteButtonAction(item, "post")
+                                            }
+                                        /> */}
                                     </Right>
                                 </CardItem>
                             </Card>
@@ -64,11 +85,14 @@ export class HomeScreen extends Component {
             </GestureRecognizer>
         );
     }
-    onSwipeLeft = () => {
+    _onSwipeLeft = () => {
         this.props.navigation.navigate("List");
     };
-    onSwipeRight = () => {
+    _onSwipeRight = () => {
         this.props.navigation.openDrawer();
+    };
+    _onSwipeDown = () => {
+        this._fetchPromotions();
     };
 }
 
@@ -81,8 +105,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getAllList: (token) => dispatch(getAllList(token)),
         fetchPromotions: () => dispatch(fetchPromotions()),
+        fetchCart: (token) => dispatch(fetchCart(token))
     };
 };
 

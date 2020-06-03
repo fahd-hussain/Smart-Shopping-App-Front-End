@@ -27,21 +27,23 @@ class CartScreen extends Component {
     }
     static navigationOptions = ({ navigation }) => {
         return {
-            
-            headerRight: () => <Icon 
-                                    type="FontAwesome" 
-                                    name="qrcode" 
-                                    style={{ paddingRight: 15 }} 
-                                    onPress={navigation.getParam("showQRModal")}
-                                />
+            headerRight: () => (
+                <Icon
+                    type="FontAwesome"
+                    name="qrcode"
+                    style={{ paddingRight: 15 }}
+                    onPress={navigation.getParam("showQRModal")}
+                />
+            ),
         };
     };
-    _showModal = () => {
-        const { QRData } = this.state
-        if (QRData.trim().length !== 0){
+    _showQRModal = () => {
+        const { QRData } = this.state;
+
+        if (QRData.trim().length !== 0) {
             this.setState({ QRModal: true });
         } else {
-            alert('QR Code not found!')
+            alert("QR Code not found!");
         }
     };
     incrementCount = (i) => {
@@ -121,19 +123,20 @@ class CartScreen extends Component {
 
     componentDidMount = () => {
         this._priceCalculate();
-        this.props.fetchCart(this.props.token.token)
-        this.props.navigation.setParams({ showQRModal: this._showModal });
+        this.props.navigation.setParams({ showQRModal: this._showQRModal });
     };
     componentDidUpdate = () => {
         this._priceCalculate();
-        this.props.fetchCart(this.props.token.token)
     };
 
     _priceCalculate = () => {
         const { cart } = this.props.cart;
         const { cartItems } = this.state;
+
         let totalPrice = 0;
-        if (!cart || cart.length === 0) {
+
+        console.log(cart);
+        if (cart.length === 0) {
             if (!this.state.cartButton) {
                 this.setState({ cartButton: true });
             }
@@ -153,6 +156,7 @@ class CartScreen extends Component {
     _checkout = () => {
         this._pushToDatabase()
             .then((res) => {
+                console.log("pushed to database");
                 this.setState(
                     {
                         QRModal: true,
@@ -161,7 +165,10 @@ class CartScreen extends Component {
                         totalCost: 0,
                         cartItems: [],
                     },
-                    () => this.props.updateCart(this.state.cartItems),
+                    () => {
+                        console.log(this.state);
+                        this.props.updateCart(this.state.cartItems);
+                    },
                 );
             })
             .catch((error) => {
@@ -185,6 +192,7 @@ class CartScreen extends Component {
         const url = `${baseUrl}cart`;
         const { token } = this.props.token;
         const { cartItems, totalCost } = this.state;
+        const { fetchCart } = this.props;
         this.setState({ isLoading: true });
         const tempCart = [];
         cartItems.map((item) => {
@@ -202,6 +210,7 @@ class CartScreen extends Component {
                     data: JSON.stringify({ cartItems: tempCart, totalPrice: totalCost }),
                 })
                     .then((res) => {
+                        fetchCart(token);
                         resolve(res.data._id);
                     })
                     .catch((error) => {
@@ -213,8 +222,8 @@ class CartScreen extends Component {
         return Promise.all(promiseArray);
     };
     render() {
-        const { cartItems, totalCost, QRModal, QRData, isLoading } = this.state;
-
+        const { cartItems, totalCost, QRModal, QRData, isLoading, cartButton } = this.state;
+        console.log(cartItems);
         return (
             <View style={[styles.container, { paddingBottom: this.state.viewPadding }]}>
                 <FlatList
@@ -277,9 +286,10 @@ class CartScreen extends Component {
                     }
                 />
                 <Button
-                    disabled={this.state.cartButton}
-                    color={color[5]}
-                    style={{ backgroundColor: color[3], width: width - 20, marginHorizontal: width / 90 }}
+                    mode="contained"
+                    style={[styles.TextInput, styles.btn2, { width: width - 20, marginHorizontal: width / 90 }]}
+                    theme={{ colors: { primary: color[3] } }}
+                    disabled={cartButton}
                     onPress={() => this._checkout()}
                     loading={isLoading}
                 >

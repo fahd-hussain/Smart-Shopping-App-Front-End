@@ -13,7 +13,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#8cc8c8"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -24,7 +24,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.FYP.SmartShoppingApp",
-      "buildNumber": "1.0.0"
+      "buildNumber": "1.4.0"
     },
     "android": {
       "package": "com.FYP.SmartShoppingApp",

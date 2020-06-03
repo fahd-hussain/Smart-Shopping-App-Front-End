@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import baseUrl from "../../constants/baseUrl";
+
 const updateCartSuccess = (data) => {
     return {
         type: "CART_UPDATE",
@@ -20,7 +21,7 @@ const fetchCartSuccess = (data) => {
 };
 const fetchCartFailure = (error) => {
     return {
-        type: "CART_FAILURE",
+        type: "FETCH_CART_FAILURE",
         payload: error,
     };
 };

@@ -36,11 +36,15 @@ const Login_Signup = createBottomTabNavigator({
     },
 });
 
+const options = {
+    headerTitle: "",
+};
+
 const Authentication = createStackNavigator(
     {
         Login_Signup_Tab: {
             screen: Login_Signup,
-            navigationOptions: headerOption,
+            navigationOptions: options,
         },
         Main: {
             screen: MainScreen,

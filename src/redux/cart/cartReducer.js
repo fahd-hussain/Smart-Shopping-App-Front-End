@@ -1,7 +1,7 @@
 const initState = {
     loading: false,
     cart: [],
-    allCarts: [],
+    carts: [],
     error: "",
 };
 
@@ -11,8 +11,6 @@ export const cartReducer = (state = initState, action) => {
             return {
                 ...state,
                 cart: action.payload,
-                loading: false,
-                error: "",
             };
 
         case "FETCH_CART_REQUEST":
@@ -23,15 +21,14 @@ export const cartReducer = (state = initState, action) => {
         case "FETCH_CART_SUCCESS":
             return {
                 ...state,
-                allCarts: action.payload,
-                cart: [],
+                carts: action.payload,
                 error: ""
             };
         case "FETCH_CART_FAILURE":
             return {
                 ...state,
                 error: action.payload,
-                allCarts: []
+                carts: []
             };
         default:
             return state;

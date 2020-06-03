@@ -34,6 +34,12 @@ export default styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
     },
+    listItemCont2: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: width / 2.5,
+    },
     textInput: {
         height: 40,
         paddingHorizontal: "3%",
@@ -50,7 +56,7 @@ export default styles = StyleSheet.create({
         borderColor: "gray",
         borderWidth: isAndroid ? 0 : 1,
         fontSize: 24,
-        textAlign: 'center',
+        textAlign: "center",
     },
     rowDir: {
         justifyContent: "space-between",
@@ -65,5 +71,12 @@ export default styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         borderColor: "black",
+    },
+    TextInput: {
+        marginHorizontal: "5%",
+        marginTop: 18,
+    },
+    btn1: {
+        backgroundColor: color[4],
     },
 });

@@ -8,7 +8,7 @@ import GestureRecognizer from "react-native-swipe-gestures";
 
 // Local Imports
 import styles from "./styles";
-import { getAllList } from "../../../redux";
+import { fetchLists } from "../../../redux";
 import color from "../../../constants/color";
 
 class ListScreen extends Component {
@@ -19,27 +19,39 @@ class ListScreen extends Component {
                 velocityThreshold: 0.3,
                 directionalOffsetThreshold: 80,
             },
+            isLoading: false,
+            // lists = this.props.list.lists
         };
     }
-    componentDidUpdate(prevProps) {
-        if (prevProps.isFocused !== this.props.isFocused) {
-            this.props.getAllList(this.props.token.token)
-        }
-    }
+    _fetchLists = () => {
+        // console.log(this.props)
+        const { fetchLists } = this.props;
+        const { token } = this.props.token
 
+        this.setState({ isLoading: true })
+
+        fetchLists(token)
+            .then(() => this.setState({ isLoading: false }))
+            .catch((error) => {
+                this.setState({ isLoading: false })
+                alert("Loading failed, swipe down to refresh")
+            })
+    }
     render() {
-        const list = this.props.allList.allList;
+        // const { lists } = this.state;
+        const lists = this.props.list.lists;
+
         return (
             <GestureRecognizer
                 onSwipeLeft={this.onSwipeLeft}
                 onSwipeRight={this.onSwipeRight}
-                onSwipeDown={this.onSwipeDown}
+                onSwipeDown={() => this.onSwipeDown()}
                 config={this.state.config}
                 style={[styles.container, { paddingBottom: this.state.viewPadding }]}
             >
                 <FlatList
                     style={styles.list}
-                    data={list}
+                    data={lists}
                     keyExtractor={(item) => item._id}
                     renderItem={({ item, index }) => (
                         <TouchableOpacity onPress={() => this.navigateToShowList(item)}>
@@ -79,21 +91,20 @@ class ListScreen extends Component {
         this.props.navigation.navigate("Home");
     };
     onSwipeDown = () => {
-        console.log("Down");
-        this.props.getAllList(this.props.token.token);
+        this.props.fetchLists(this.props.token.token);
     };
 }
 
 const mapStateToProps = (state) => {
     return {
         token: state.token,
-        allList: state.allList,
+        list: state.list
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getAllList: (token) => dispatch(getAllList(token)),
+        fetchLists: (token) => dispatch(fetchLists(token)),
     };
 };
 export default withNavigationFocus(connect(mapStateToProps, mapDispatchToProps)(ListScreen));

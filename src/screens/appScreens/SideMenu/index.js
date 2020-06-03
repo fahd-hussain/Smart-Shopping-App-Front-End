@@ -110,7 +110,7 @@ class SideMenu extends Component {
                                             this._about_us();
                                             return;
                                         default:
-                                            console.log(el.link)
+                                            // console.log(el.link)
                                             this.props.navigation.navigate(el.link);
                                     }
                                 }}

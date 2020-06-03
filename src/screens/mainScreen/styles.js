@@ -1,5 +1,8 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import color from "../../constants/color";
+
+const width = Dimensions.get("window").width;
+const scale = Dimensions.get("window").scale
 
 export default styles = StyleSheet.create({
     container: {
@@ -7,29 +10,31 @@ export default styles = StyleSheet.create({
         marginTop: 25,
     },
     Logo1: {
-        fontSize: 35,
+        fontSize: width/ (scale*2),
+        fontWeight: "bold",
         marginHorizontal: "5%",
-        marginTop: 10,
-        color: color[5],
+        // marginTop: 10,
+        color: color[4],
     },
     Logo2: {
-        fontSize: 30,
+        fontSize: width/ (scale*2.5),
+        fontWeight: "bold",
         marginHorizontal: "5%",
+        // paddingTop: ,
         color: color[3],
     },
     Underline: {
-        borderBottomColor: color[3],
-        borderBottomWidth: 4,
+        borderBottomColor: color.logo2,
+        borderBottomWidth: 5,
         borderRadius: 10,
-        marginLeft: "5%",
-        marginRight: 100,
+        marginHorizontal: "5%",
         marginTop: 4,
     },
     FormText: {
-        fontSize: 20,
+        fontSize: width/ (scale*6),
         marginLeft: "5%",
         marginTop: 20,
-        color: color[1],
+        color: color[4],
     },
     TextInput: {
         marginHorizontal: "5%",
@@ -37,10 +42,6 @@ export default styles = StyleSheet.create({
     },
     TextInput2: {
         width: "40%",
-        marginHorizontal: "5%",
-        marginTop: 18,
-    },
-    CustomBtnTxt: {
         marginHorizontal: "5%",
         marginTop: 18,
     },
@@ -57,4 +58,10 @@ export default styles = StyleSheet.create({
         flexDirection: "row-reverse",
         justifyContent: "space-between",
     },
+    btn1: {
+        backgroundColor: color[4]
+    },
+    btn2: {
+        backgroundColor: color[3]
+    }
 });

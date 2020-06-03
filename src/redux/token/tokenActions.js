@@ -1,22 +1,25 @@
 import axios from "axios";
-import baseUrl from "../../constants/baseUrl";
-import { getUserSuccess, getUser } from "../user/userActions";
-import { all_list_success } from "../allList/allListActions";
 
-const tokenRequest = () => {
+// Local Imports
+import baseUrl from "../../constants/baseUrl";
+
+// Global Variables
+const url = `${baseUrl}users`;
+
+const fetchTokenRequest = () => {
     return {
         type: "TOKEN_REQUEST",
     };
 };
 
-const tokenSuccess = (token) => {
+const fetchTokenSuccess = (token) => {
     return {
         type: "TOKEN_SUCCESS",
         payload: token,
     };
 };
 
-const tokenFailure = (error) => {
+const fetchTokenFailure = (error) => {
     return {
         type: "TOKEN_FAILURE",
         payload: error,
@@ -24,13 +27,13 @@ const tokenFailure = (error) => {
 };
 
 export const getToken = (username, password) => (dispatch) => {
-    dispatch(tokenRequest());
+    dispatch(fetchTokenRequest());
 
     const promiseArray = [];
 
     promiseArray.push(
         new Promise((resolve, reject) => {
-            axios(baseUrl + "users/login", {
+            axios(`${url}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -39,31 +42,27 @@ export const getToken = (username, password) => (dispatch) => {
             })
                 .then((res) => {
                     const token = "Bearer " + res.data.token;
-                    dispatch(tokenSuccess(token));
-                    setTimeout(() => {
-                        resolve(token);
-                    }, 1000);
+                    dispatch(fetchTokenSuccess(token));
+                    resolve(token);
                 })
                 .catch((error) => {
-                    dispatch(tokenFailure(error));
-                    reject(error)
+                    dispatch(fetchTokenFailure(error));
+                    reject(error);
                 });
         }),
     );
 
     return Promise.all(promiseArray);
 };
-
 // --------------------------------------------------------------------------- //
-
 export const setToken = (username, password, firstname, lastname, gender) => (dispatch) => {
-    dispatch(tokenRequest());
+    dispatch(fetchTokenRequest());
 
     const promiseArray = [];
 
     promiseArray.push(
         new Promise((resolve, reject) => {
-            axios(baseUrl + "users/signup", {
+            axios(`${url}/signup`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -72,44 +71,42 @@ export const setToken = (username, password, firstname, lastname, gender) => (di
             })
                 .then((res) => {
                     const token = "Bearer " + res.data.token;
-                    dispatch(tokenSuccess(token));
-                    resolve(token)
+                    dispatch(fetchTokenSuccess(token));
+                    resolve(token);
                 })
                 .catch((error) => {
-                    dispatch(tokenFailure(error));
-                    reject(error)
+                    dispatch(fetchTokenFailure(error));
+                    reject(error);
                 });
         }),
     );
 
     return Promise.all(promiseArray);
 };
-
-// --------------------------------------------------------------------------- //
-
+//---------------------------------------------------------------------------- //
 export const removeToken = () => (dispatch) => {
-    dispatch(tokenRequest());
+    dispatch(fetchTokenRequest());
 
     const promiseArray = [];
 
     promiseArray.push(
         new Promise((resolve, reject) => {
-          axios(baseUrl + "users/logout", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then(() => {
-                dispatch(tokenSuccess(null));
-                resolve("done")
+            axios(`${url}/logout`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
             })
-            .catch((error) => {
-                dispatch(tokenFailure(error));
-                reject(error)
-            });
-        })
-    )
-    
-    return Promise.all(promiseArray)
+                .then(() => {
+                    dispatch(fetchTokenSuccess(null));
+                    resolve("done");
+                })
+                .catch((error) => {
+                    dispatch(fetchTokenFailure(error));
+                    reject(error);
+                });
+        }),
+    );
+
+    return Promise.all(promiseArray);
 };

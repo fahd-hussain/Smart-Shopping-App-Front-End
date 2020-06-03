@@ -12,25 +12,22 @@ class ListShowScreen extends Component {
         super(props)
         this.state = {
             list: this.props.navigation.state.params.listItems,
-            isLeading: false
         };
     }
-    componentDidMount = () => {
-        if (!this.state.list){
-            this.setState({ isLeading: true})
-        }
-    }
+    
     _findTheWay = () => {
-        const listId = this.props.navigation.state.params
-        console.log(listId._id)
-        this.props.navigation.navigate("Map", {listId: listId._id})
+        const { _id } = this.props.navigation.state.params
+        
+        this.props.navigation.navigate("Map", {listId: _id})
     }
+
     render() {
+        const { list } = this.state
         return (
             <View style={[styles.container, { paddingBottom: this.state.viewPadding }]}>
                 <FlatList
                     style={styles.list}
-                    data={this.state.list}
+                    data={list}
                     keyExtractor={(item, index) => String(index)}
                     renderItem={({ item, index }) => (
                         <Card style={{ paddingHorizontal: 10 }}>
@@ -47,7 +44,13 @@ class ListShowScreen extends Component {
                         </View>
                     }
                 />
-                <Button onPress={this._findTheWay} style={{}}>Find they WAY!</Button>
+                <Button 
+                    onPress={this._findTheWay} style={{}}
+                    mode="contained"
+                    theme={{ colors: { primary: color[3] } }}
+                    style={[styles.TextInput, styles.btn1]}
+                >Find they WAY!
+                </Button>
             </View>
         );
     }

@@ -7,4 +7,6 @@ export default color = {
     "danger": '#dc3545',
     "warning": '#ffc107',
     "success": '#28a745',
+    "logo1": "#b5929d",
+    "logo2": "#8cc8c8"
 }

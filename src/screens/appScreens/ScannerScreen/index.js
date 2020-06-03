@@ -1,37 +1,88 @@
 import React, { Component } from "react";
-import { StyleSheet, Alert } from "react-native";
-import { View, Text, Icon } from "native-base";
+import { StyleSheet, Alert, Modal, TextInput } from "react-native";
+import { View, Text, Card, CardItem, Right, Left, Icon } from "native-base";
+import { Button } from "react-native-paper";
 import * as Permissions from "expo-permissions";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import GestureRecognizer, { swipeDirections } from "react-native-swipe-gestures";
+import GestureRecognizer from "react-native-swipe-gestures";
 import { connect } from "react-redux";
-import axios from 'axios'
+import axios from "axios";
 
 // Local Imports
-import { styles } from "./styles";
+import styles from "./styles";
 import { updateCart } from "../../../redux";
 import baseUrl from "../../../constants/baseUrl";
+import LoadingScreen from "../../../components/Loading";
+import { not } from "react-native-reanimated";
 
 class BarCodeScannerScreen extends Component {
     state = {
         hasCameraPermission: null,
         scanned: false,
-        barcode: "",
         Cart: this.props.cart.cart,
-        quantity: 1,
         config: {
             velocityThreshold: 0.3,
             directionalOffsetThreshold: 80,
         },
+        detailModal: false,
+        isLoading: false,
+        data: {},
     };
 
     componentDidMount() {
+        // this.fetchData("123456");
         this.getPermissionsAsync();
     }
 
     getPermissionsAsync = async () => {
         const { status } = await Permissions.askAsync(Permissions.CAMERA);
         this.setState({ hasCameraPermission: status === "granted" });
+    };
+
+    incrementCount = () => {
+        const temp = this.state.data;
+        temp.quantity += 1;
+        temp.totalPrice = temp.price * temp.quantity;
+        this.setState(
+            (prevState) => {
+                let data = prevState.data;
+                return { data: data };
+            },
+            () => this.props.updateCart(this.state.data),
+        );
+    };
+
+    decrementCount = () => {
+        const temp = this.state.data;
+        if (temp.quantity > 1) {
+            temp.quantity -= 1;
+            temp.totalPrice = temp.price * temp.quantity;
+
+            this.setState(
+                (prevState) => {
+                    let data = prevState.data;
+                    return { data: data };
+                },
+                () => this.props.updateCart(this.state.data),
+            );
+        }
+    };
+
+    _setCount = (value) => {
+        const newValue = parseInt(value, 10);
+        const temp = this.state.data;
+
+        if (newValue <= 0) return;
+
+        temp.quantity = value;
+        temp.totalPrice = temp.price * temp.quantity;
+        this.setState(
+            (prevState) => {
+                let data = prevState.data;
+                return { data: data };
+            },
+            () => this.props.updateCart(this.state.data),
+        );
     };
 
     onSwipeRight = () => {
@@ -43,8 +94,7 @@ class BarCodeScannerScreen extends Component {
     };
 
     render() {
-        const { hasCameraPermission, scanned } = this.state;
-        // console.log(this.state.Cart)
+        const { hasCameraPermission, scanned, detailModal, data, isLoading } = this.state;
         if (hasCameraPermission === null) {
             return (
                 <View style={styles.container}>
@@ -70,11 +120,94 @@ class BarCodeScannerScreen extends Component {
                     onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
                     style={StyleSheet.absoluteFill}
                 />
+                {!isLoading ? (
+                    <Modal
+                        visible={detailModal}
+                        onDismiss={() => this.setState({ detailModal: false })}
+                        onRequestClose={() => this.setState({ detailModal: false })}
+                        animationType={"fade"}
+                    >
+                        {!this._isEmpty(data) ? (
+                            <View style={[{ paddingBottom: 10, justifyContent: 'center', flex: 1 }]}>
+                                <Card style={{ paddingHorizontal: 10 }}>
+                                    <CardItem header>
+                                        <Left>
+                                            <Text style={styles.listItem}>{data.name}</Text>
+                                        </Left>
+                                        <Right>
+                                            <Text>{data.price}</Text>
+                                        </Right>
+                                    </CardItem>
+                                    <CardItem bordered>
+                                        <Left>
+                                            <Text style={styles.listItem}>{data.totalPrice}</Text>
+                                        </Left>
+                                        <Right>
+                                            <View style={{ flexDirection: "row" }}>
+                                                <Button
+                                                    style={{ backgroundColor: color[3], width: 10 }}
+                                                    color={color[5]}
+                                                    onPress={() => this.decrementCount()}
+                                                >
+                                                    -
+                                                </Button>
+                                                <TextInput
+                                                    value={String(data.quantity)}
+                                                    onChangeText={(text) => this._setCount(text)}
+                                                    style={{ width: 20, marginLeft: 10 }}
+                                                    keyboardType="number-pad"
+                                                    returnKeyType="done"
+                                                    returnKeyLabel="done"
+                                                />
+                                                <Button
+                                                    style={{ backgroundColor: color[3], width: 10 }}
+                                                    color={color[5]}
+                                                    onPress={() => this.incrementCount()}
+                                                >
+                                                    +
+                                                </Button>
+                                            </View>
+                                        </Right>
+                                    </CardItem>
+                                </Card>
+                            </View>
+                        ) : (
+                            <View style={styles.container}>
+                                <Text>Couldn't Found anything on store</Text>
+                            </View>
+                        )}
+
+                        <View style={styles.modalButtonsLeft}>
+                            <Button
+                                style={{ backgroundColor: color.danger, width: 150 }}
+                                color={color[4]}
+                                onPress={() => this.setState({ detailModal: false, scanned: false })}
+                            >
+                                Cancel
+                            </Button>
+                        </View>
+                        <View style={styles.modalButtonsRight}>
+                            <Button
+                                style={{ backgroundColor: color[3], width: 150 }}
+                                color={color[4]}
+                                onPress={() => {
+                                    this.setState({ detailModal: false, scanned: false });
+                                    this._addToCart();
+                                }}
+                            >
+                                Add
+                            </Button>
+                        </View>
+                    </Modal>
+                ) : (
+                    <LoadingScreen />
+                )}
             </GestureRecognizer>
         );
     }
 
     handleBarCodeScanned = ({ data }) => {
+        this.fetchData(data);
         this.setState({ scanned: true });
         this.showAlert(data);
     };
@@ -87,73 +220,90 @@ class BarCodeScannerScreen extends Component {
                 style: "cancel",
             },
             {
-                text: "Add to Cart",
+                text: "More Details",
                 onPress: () => {
-                    this.setState({ scanned: false, barcode: data });
-                    this.fetchData();
+                    if (this._isEmpty()) this.setState({ detailModal: true });
                 },
             },
         ]);
     }
 
-    fetchData = () => {
-        const notEmpty = this.state.barcode.trim().length > 0;
+    fetchData = (bar) => {
+        const notEmpty = bar.trim().length > 0;
         const { token } = this.props.token;
-        console.log(token)
-        if (notEmpty){
-            const barcode = this.state.barcode;
-            const url = `${baseUrl}store/${barcode}`
+
+        this.setState({ isLoading: true });
+
+        if (notEmpty) {
+            const url = `${baseUrl}store/${bar}`;
             axios(url, {
-                method: 'GET',
+                method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": token
+                    Authorization: token,
                 },
             })
-            .then( res => {
-                console.log(res.data)
-                this.addToCart(res.data)
-            })
-            .catch( error => {
-                console.log(error)
-            })
+                .then((res) => {
+                    this.setState({ isLoading: false });
+                    if (res.data.length === 0) {
+                        this.setState({ detailModal: false, data: {} });
+                    }
+                    // console.log(res.data.length !== 0)
+                    if (res.data.length !== 0) {
+                        this._showDetails(res.data);
+                    }
+                })
+                .catch((error) => {
+                    this.setState({ scanned: false, isLoading: false });
+                    console.log(error);
+                });
         }
     };
 
-    addToCart = (data) => {
-        const notEmpty = data.length > 0;
-        // console.log(data)
-        if (notEmpty) {
-            const { name, barcode, _id, price } = data[0]
-            const { quantity } = this.state
-            console.log(name, barcode, _id, price, quantity )
+    _showDetails = (data) => {
+        this.setState({ data: data[0] });
+        this.setState({ data: Object.assign({ quantity: 1, totalPrice: data[0].price }, this.state.data) });
+    };
+
+    _addToCart = () => {
+        const { data } = this.state;
+
+        console.log(this._isEmpty(data));
+
+        if (!this._isEmpty(data)) {
+            const { name, barcode, _id, price, totalPrice, quantity } = data;
             this.setState(
                 (prevState) => {
                     let { Cart } = prevState;
                     return {
                         Cart: Cart.concat({
                             _id: _id,
-                            name: name, 
-                            barcode: barcode, 
-                            price: price, 
+                            name: name,
+                            barcode: barcode,
+                            price: price,
                             quantity: quantity,
-                            totalPrice: price
+                            totalPrice: totalPrice,
                         }),
-                        barcode: "",
                     };
                 },
                 () => this.props.updateCart(this.state.Cart),
             );
         }
     };
+    _isEmpty = (obj) => {
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) return false;
+        }
+        return true;
+    };
 }
 
 const mapStateToProps = (state) => {
     return {
         token: state.token,
-        cart: state.cart
-    }
-}
+        cart: state.cart,
+    };
+};
 
 const mapDispatchToProps = (dispatch) => {
     return {
