@@ -6,6 +6,7 @@ import baseUrl from '../../constants/baseUrl'
 
 // Global Variables
 const url = `${baseUrl}promotions`
+
 const fetchPromotionsLoading = () => ({
     type: "PROMOTIONS_LOADING",
 })

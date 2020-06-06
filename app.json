@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "Smart-Shopping-App",
-    "slug": "Smart-Shopping-App",
+    "name": "Smart Shopping",
+    "slug": "Smart-Shopping",
     "platforms": [
       "ios",
       "android",
       "web"
     ],
-    "version": "1.2.1",
+    "version": "1.4.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
