@@ -46,7 +46,7 @@ export const fetchCart = (token) => (dispatch) => {
             .then((res) => {
                 const temp = []
                 res.data.map( item => {
-                    temp.push({ _id: item._id, cartItems: item.cartItems, totalPrice: item.totalPrice, name: item.createdAt })
+                    temp.push({ _id: item._id, cartItems: item.cartItems, totalPrice: item.totalPrice, name: item.createdAt, paid: item.paid })
                 })
                 dispatch(fetchCartSuccess(temp));
                 resolve(temp)

@@ -88,6 +88,7 @@ export class index extends Component {
                     this.setState({ compareButton: true })
 
     }
+
     _isSelected = (list) => {
         const { selectedList1, selectedList2 } = this.state;
 
@@ -110,7 +111,7 @@ export class index extends Component {
                             onLongPress={() => this._selectList(item)}
                             style={ this._isSelected(item) ? { backgroundColor: color[3] } : null }
                         >
-                            <Card style={{ paddingHorizontal: 10 }}>
+                            <Card style={ item.paid ? { paddingHorizontal: 10, backgroundColor: color[5] }  : { paddingHorizontal: 10 }}>
                                 <View style={styles.listItemCont}>
                                     <Text style={styles.listItem}>{item.name}</Text>
                                 </View>

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, SafeAreaView, ScrollView, Dimensions, Share, Button, Modal } from "react-native";
+import { View, SafeAreaView, ScrollView, Dimensions, Share, Modal, AsyncStorage } from "react-native";
 import { Text, List, ListItem, Icon } from "native-base";
 import { Avatar } from "react-native-paper";
 import { connect } from "react-redux";
@@ -52,6 +52,7 @@ class SideMenu extends Component {
 
     _logout = () => {
         this.props.removeToken();
+        AsyncStorage.clear()
         this.props.navigation.navigate("Authentication");
     };
 
